@@ -20,7 +20,7 @@ public class BloqueoPeluqueroController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int idTrabajador = Integer.parseInt(req.getParameter("idTrabajador"));
         req.setAttribute("bloqueos", service.obtenerBloqueosPorTrabajador(idTrabajador));
-        req.getRequestDispatcher("bloqueos.jsp").forward(req, resp);
+        req.getRequestDispatcher("jspUsuario/gestionBloqueos.jsp").forward(req, resp);
     }
 
     @Override

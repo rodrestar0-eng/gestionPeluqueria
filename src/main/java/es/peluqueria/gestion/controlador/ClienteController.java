@@ -1,13 +1,17 @@
 package es.peluqueria.gestion.controlador;
 
+import es.peluqueria.gestion.modelo.Especialidad;
+import es.peluqueria.gestion.modelo.TrabajadorEspecialidad;
 import es.peluqueria.gestion.modelo.Cliente;
+import es.peluqueria.gestion.modelo.Usuario;
 import es.peluqueria.gestion.servicio.ClienteService;
-
+import es.peluqueria.gestion.servicio.TrabajadorEspecialidadService;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/cliente")
 public class ClienteController extends HttpServlet {
@@ -130,17 +134,27 @@ public class ClienteController extends HttpServlet {
  // ================================
  // PERFIL
  // ================================
- private void mostrarPerfil(HttpServletRequest request, HttpServletResponse response)
-         throws ServletException, IOException {
+    private void mostrarPerfil(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-     HttpSession sesion = request.getSession(false);
-     if (sesion == null || sesion.getAttribute("cliente") == null) {
-         response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
-         return;
-     }
+        HttpSession sesion = request.getSession(false);
 
-     request.getRequestDispatcher("/jspCliente/miPerfil.jsp").forward(request, response);
- }
+        if (sesion == null || sesion.getAttribute("usuario") == null) {
+            response.sendRedirect("jsp/login.jsp");
+            return;
+        }
+
+        Usuario usuario = (Usuario) sesion.getAttribute("usuario");
+
+        // ⭐ Cargar especialidades del peluquero
+        TrabajadorEspecialidadService tes = new TrabajadorEspecialidadService();
+        List<Especialidad> especialidades = tes.obtenerEspecialidadesCompletas(usuario.getIdUsuario());
+
+        request.setAttribute("especialidades", especialidades);
+
+        request.getRequestDispatcher("jspUsuario/miPerfil.jsp").forward(request, response);
+    }
+
 
 
  // ================================

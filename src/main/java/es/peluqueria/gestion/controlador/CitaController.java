@@ -272,6 +272,6 @@ public class CitaController extends HttpServlet {
         List<Cita> citas = citaService.listarPorPeluquero(peluquero.getIdUsuario());
         request.setAttribute("citas", citas);
 
-        request.getRequestDispatcher("misCitasPeluquero.jsp").forward(request, response);
+        request.getRequestDispatcher("jspUsuario/misCitas.jsp").forward(request, response);
     }
 }

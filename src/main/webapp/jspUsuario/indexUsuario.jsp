@@ -1,10 +1,10 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="es.peluqueria.gestion.modelo.Usuario" %>
 
 <%
-    Usuario u = (Usuario) session.getAttribute("usuario");
-    if (u == null || u.getTipoUsuario() != 2) { // 2 = peluquero
-        response.sendRedirect("../jsp/login.jsp");
+    Usuario usuario = (Usuario) session.getAttribute("usuario");
+    if (usuario == null) {
+        response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
         return;
     }
 %>
@@ -13,98 +13,69 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel del Peluquero</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        body {
-            background: #f8f9fa;
-        }
-        .menu-card {
-            transition: transform .15s ease;
-            cursor: pointer;
-        }
-        .menu-card:hover {
-            transform: scale(1.03);
-        }
-        .icon {
-            font-size: 2.6rem;
-        }
-    </style>
+    <title>Panel Usuario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
 
-<div class="container py-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="<%= request.getContextPath() %>/usuario">Peluquería Gestión</a>
 
-    <h2 class="mb-4">👋 Bienvenido, <%= u.getNombre() %></h2>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
 
-    <div class="row g-4">
+                <!-- PERFIL -->
+                <li class="nav-item">
+                    <a class="nav-link" href="<%= request.getContextPath() %>/usuario?accion=perfil">
+                        Mi Perfil
+                    </a>
+                </li>
 
-        <!-- Mis Citas -->
-        <div class="col-md-4">
-            <a href="cita?accion=misCitasPeluquero" class="text-decoration-none text-dark">
-                <div class="card menu-card shadow-sm p-3">
-                    <div class="text-center">
-                        <div class="icon">📅</div>
-                        <h5 class="mt-2">Mis citas</h5>
-                        <p class="small text-muted">Listado de tus citas, completadas o pendientes.</p>
-                    </div>
-                </div>
-            </a>
+                <% if (usuario.getTipoUsuario() == 2) { %>
+
+                    <!-- HORARIOS -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="<%= request.getContextPath() %>/horarios?idTrabajador=<%=usuario.getIdUsuario()%>">
+                            Gestionar Horarios
+                        </a>
+                    </li>
+
+                    <!-- BLOQUEOS (ajusta si tu servlet es otro) -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="<%= request.getContextPath() %>/bloqueos?idTrabajador=<%=usuario.getIdUsuario()%>">
+                            Gestionar Bloqueos
+                        </a>
+                    </li>
+
+                    <!-- MIS CITAS -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="<%= request.getContextPath() %>/cita?accion=misCitasPeluquero&idTrabajador=<%=usuario.getIdUsuario()%>">
+                            Mis Citas
+                        </a>
+                    </li>
+
+                <% } %>
+
+            </ul>
+
+            <!-- LOGOUT CORRECTO -->
+            <form action="<%= request.getContextPath() %>/usuario" method="get" class="d-flex">
+                <input type="hidden" name="accion" value="cerrarSesion">
+                <button type="submit" class="btn btn-outline-light">Logout</button>
+            </form>
+
         </div>
+    </div>
+</nav>
 
-        <!-- Gestión Horarios -->
-        <div class="col-md-4">
-            <a href="horarios" class="text-decoration-none text-dark">
-                <div class="card menu-card shadow-sm p-3">
-                    <div class="text-center">
-                        <div class="icon">🕒</div>
-                        <h5 class="mt-2">Gestión de horarios</h5>
-                        <p class="small text-muted">Define tus franjas de trabajo cada semana.</p>
-                    </div>
-                </div>
-            </a>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h1 class="card-title">Bienvenido, <%= usuario.getNombre() %>!</h1>
+            <p class="card-text">Selecciona una opción del menú superior.</p>
         </div>
-
-        <!-- Gestión Bloqueos -->
-        <div class="col-md-4">
-            <a href="gestionBloqueos.jsp" class="text-decoration-none text-dark">
-                <div class="card menu-card shadow-sm p-3">
-                    <div class="text-center">
-                        <div class="icon">⛔</div>
-                        <h5 class="mt-2">Bloqueos / Vacaciones</h5>
-                        <p class="small text-muted">Crea días no disponibles.</p>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- Mi perfil -->
-        <div class="col-md-4">
-            <a href="miPerfil.jsp" class="text-decoration-none text-dark">
-                <div class="card menu-card shadow-sm p-3">
-                    <div class="text-center">
-                        <div class="icon">👤</div>
-                        <h5 class="mt-2">Mi perfil</h5>
-                        <p class="small text-muted">Edita tu información personal.</p>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- Cerrar sesión -->
-        <div class="col-md-4">
-            <a href="../logout" class="text-decoration-none text-dark">
-                <div class="card menu-card shadow-sm p-3 bg-danger text-white">
-                    <div class="text-center">
-                        <div class="icon">🚪</div>
-                        <h5 class="mt-2">Cerrar sesión</h5>
-                    </div>
-                </div>
-            </a>
-        </div>
-
     </div>
 </div>
 

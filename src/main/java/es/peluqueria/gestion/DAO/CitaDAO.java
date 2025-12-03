@@ -57,6 +57,26 @@ public class CitaDAO {
         }
         return null;
     }
+    public boolean actualizarEstado(int idCita, int nuevoEstado) {
+        // Actualizamos el estado y asignamos FECHA_HORA_CITA = FECHA_HORA_CITA
+        // de forma explícita para evitar que MySQL aplique ON UPDATE CURRENT_TIMESTAMP
+        String sql = "UPDATE CITAS SET ESTADO = ?, FECHA_HORA_CITA = FECHA_HORA_CITA WHERE ID_CITA = ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, nuevoEstado);
+            ps.setInt(2, idCita);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
 
     // LISTAR TODAS
     public List<Cita> listarTodas() throws SQLException {

@@ -142,5 +142,18 @@ public class CitaService {
             return null;
         }
     }
+    public boolean actualizarEstado(int idCita, int nuevoEstado) {
+        try {
+            // Validar rango correcto
+            if (nuevoEstado < 1 || nuevoEstado > 3) {
+                return false;
+            }
+            return citaDAO.actualizarEstado(idCita, nuevoEstado);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 }

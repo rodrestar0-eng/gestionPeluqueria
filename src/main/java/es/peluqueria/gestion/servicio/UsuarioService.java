@@ -28,6 +28,7 @@ public class UsuarioService {
             return false;
         }
     }
+    
     public void asignarEspecialidades(int idUsuario, List<Integer> especialidades) {
         try {
             usuarioDAO.asignarEspecialidades(idUsuario, especialidades);
@@ -82,6 +83,15 @@ public class UsuarioService {
             return false;
         }
     }
+    public boolean actualizarPerfilUsuario(Usuario usuario) {
+        try {
+            return usuarioDAO.actualizarPerfilUsuario(usuario);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     
     public List<Usuario> listarPeluqueros() {
         try {

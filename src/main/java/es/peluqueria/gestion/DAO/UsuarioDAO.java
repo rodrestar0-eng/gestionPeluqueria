@@ -49,6 +49,24 @@
 	        }
 	        return null;
 	    }
+	    
+	    public boolean actualizarPerfilUsuario(Usuario usuario) throws SQLException {
+	        String sql = "UPDATE USUARIOS SET NOMBRE = ?, APELLIDO = ?, EMAIL = ?, TELEFONO = ? " +
+	                     "WHERE ID_USUARIO = ?";
+
+	        try (Connection conn = DBConnection.getConnection();
+	             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+	            ps.setString(1, usuario.getNombre());
+	            ps.setString(2, usuario.getApellido());
+	            ps.setString(3, usuario.getEmail());
+	            ps.setString(4, usuario.getTelefono());
+	            ps.setInt(5, usuario.getIdUsuario());
+
+	            return ps.executeUpdate() > 0;
+	        }
+	    }
+
 	
 	    // =========================
 	    // MÉTODO: OBTENER POR EMAIL

@@ -1,7 +1,9 @@
 package es.peluqueria.gestion.controlador;
 
 import es.peluqueria.gestion.modelo.Usuario;
+import es.peluqueria.gestion.modelo.Especialidad;
 import es.peluqueria.gestion.servicio.UsuarioService;
+import es.peluqueria.gestion.servicio.TrabajadorEspecialidadService;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
@@ -40,17 +42,21 @@ public class UsuarioController extends HttpServlet {
             case "eliminar":
                 eliminarUsuario(request, response);
                 break;
-                
+
             case "listar":
                 listarTrabajadores(request, response);
                 break;
 
+            case "inicio":
+                request.getRequestDispatcher("jspUsuario/indexUsuario.jsp").forward(request, response);
+                break;
 
             default:
                 response.sendRedirect("index.jsp");
                 break;
         }
     }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -72,6 +78,12 @@ public class UsuarioController extends HttpServlet {
             case "actualizar":
                 actualizarUsuario(request, response);
                 break;
+               
+            case "actualizarMiPerfil":
+                actualizarMiPerfil(request, response);
+                break;
+                
+               
 
             default:
                 response.sendRedirect("index.jsp");
@@ -79,12 +91,33 @@ public class UsuarioController extends HttpServlet {
         }
     }
 
+
     // =====================================================
     //                  MÉTODOS DEL CONTROLADOR
     // =====================================================
 
+    private void mostrarPerfil(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-    // ---------- LOGIN ----------
+        HttpSession sesion = request.getSession(false);
+
+        if (sesion == null || sesion.getAttribute("usuario") == null) {
+            response.sendRedirect("/jsp/login.jsp");
+            return;
+        }
+
+        Usuario usuario = (Usuario) sesion.getAttribute("usuario");
+
+        // ⭐ CARGAR ESPECIALIDADES DEL PELUQUERO
+        TrabajadorEspecialidadService tes = new TrabajadorEspecialidadService();
+        List<Especialidad> especialidades = tes.obtenerEspecialidadesCompletas(usuario.getIdUsuario());
+
+        request.setAttribute("especialidades", especialidades);
+
+        request.getRequestDispatcher("jspUsuario/miPerfil.jsp").forward(request, response);
+    }
+
+
     private void loginUsuario(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -102,25 +135,22 @@ public class UsuarioController extends HttpServlet {
         HttpSession sesion = request.getSession();
         sesion.setAttribute("usuario", usuario);
 
-        // Redirección por tipo de usuario
         switch (usuario.getTipoUsuario()) {
 
-            case 1: // Administrador
+            case 1:
                 response.sendRedirect("adminDashboard.jsp");
                 break;
 
-            case 2: // Peluquero
+            case 2:
                 response.sendRedirect("jspUsuario/indexUsuario.jsp");
                 break;
 
             default:
-                response.sendRedirect("index.jsp");
+                response.sendRedirect("jspUsuario/indexUsuario.jsp");
                 break;
         }
     }
 
-
-    // ---------- REGISTRO ----------
     private void registrarUsuario(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -144,24 +174,40 @@ public class UsuarioController extends HttpServlet {
 
         response.sendRedirect("/jsp/login.jsp");
     }
-
-
-    // ---------- PERFIL ----------
-    private void mostrarPerfil(HttpServletRequest request, HttpServletResponse response)
+    
+    private void actualizarMiPerfil(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession sesion = request.getSession(false);
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
 
-        if (sesion == null || sesion.getAttribute("usuario") == null) {
-            response.sendRedirect("/jsp/login.jsp");
+        if (usuario == null) {
+            response.sendRedirect("login.jsp");
             return;
         }
 
+        // Actualizar campos permitidos
+        usuario.setNombre(request.getParameter("nombre"));
+        usuario.setApellido(request.getParameter("apellido"));
+        usuario.setEmail(request.getParameter("email"));
+        usuario.setTelefono(request.getParameter("telefono"));
+
+        boolean ok = usuarioService.actualizarPerfilUsuario(usuario);
+
+        if (ok) {
+            request.getSession().setAttribute("usuario", usuario);
+            request.setAttribute("mensaje", "Cambios guardados correctamente.");
+        } else {
+            request.setAttribute("error", "No se pudo actualizar tu perfil.");
+        }
+     // ⭐ VOLVER A CARGAR ESPECIALIDADES PARA QUE NO DESAPAREZCAN
+        TrabajadorEspecialidadService tes = new TrabajadorEspecialidadService();
+        List<Especialidad> especialidades = tes.obtenerEspecialidadesCompletas(usuario.getIdUsuario());
+        request.setAttribute("especialidades", especialidades);
+        
         request.getRequestDispatcher("jspUsuario/miPerfil.jsp").forward(request, response);
     }
 
 
-    // ---------- ACTUALIZAR ----------
     private void actualizarUsuario(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -191,8 +237,6 @@ public class UsuarioController extends HttpServlet {
         request.getRequestDispatcher("perfilUsuario.jsp").forward(request, response);
     }
 
-
-    // ---------- ELIMINAR ----------
     private void eliminarUsuario(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
@@ -203,7 +247,6 @@ public class UsuarioController extends HttpServlet {
             return;
         }
 
-        // ⬅️ Recuperar el ID que viene del enlace
         int id = Integer.parseInt(request.getParameter("id"));
 
         usuarioService.eliminarUsuario(id);
@@ -211,13 +254,10 @@ public class UsuarioController extends HttpServlet {
         response.sendRedirect("admin?accion=listarUsuarios");
     }
 
-    //Listar
-    
     private void listarTrabajadores(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            // Tipo 2 = Peluquero / trabajador
             List<Usuario> trabajadores = usuarioService.listarPorTipo(2);
 
             request.setAttribute("trabajadores", trabajadores);
@@ -231,9 +271,6 @@ public class UsuarioController extends HttpServlet {
         }
     }
 
-
-
-    // ---------- CERRAR SESIÓN ----------
     private void cerrarSesion(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
@@ -242,4 +279,5 @@ public class UsuarioController extends HttpServlet {
 
         response.sendRedirect("index.jsp");
     }
+
 }

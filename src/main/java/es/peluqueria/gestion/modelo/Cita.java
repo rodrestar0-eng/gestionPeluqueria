@@ -14,8 +14,19 @@ public class Cita {
     private int estado; // 1 = pendiente, 2 = completada, 3 = cancelada
     private String nombrePeluquero;
     private String nombreServicio;
+    private String nombreCliente;
+    
+    
 
-    public String getNombrePeluquero() {
+    public String getNombreCliente() {
+		return nombreCliente;
+	}
+
+	public void setNombreCliente(String nombreCliente) {
+		this.nombreCliente = nombreCliente;
+	}
+
+	public String getNombrePeluquero() {
         return nombrePeluquero;
     }
 

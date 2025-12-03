@@ -1,8 +1,10 @@
 package es.peluqueria.gestion.servicio;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import es.peluqueria.gestion.DAO.TrabajadorEspecialidadDAO;
+import es.peluqueria.gestion.modelo.Especialidad;
 import es.peluqueria.gestion.modelo.TrabajadorEspecialidad;
 
 public class TrabajadorEspecialidadService {
@@ -20,4 +22,25 @@ public class TrabajadorEspecialidadService {
     public void eliminarAsignacion(int idTrabajador, int idEspecialidad) {
         dao.eliminarAsignacion(idTrabajador, idEspecialidad);
     }
+
+    // ⭐ MÉTODO CORRECTO PARA DEVOLVER ESPECIALIDADES COMPLETAS
+    public List<Especialidad> obtenerEspecialidadesCompletas(int idTrabajador) {
+
+        // Este es el método correcto
+        List<TrabajadorEspecialidad> asignaciones = dao.obtenerPorTrabajador(idTrabajador);
+
+        EspecialidadService espService = new EspecialidadService();
+
+        List<Especialidad> resultado = new ArrayList<>();
+
+        for (TrabajadorEspecialidad te : asignaciones) {
+            Especialidad esp = espService.obtenerPorId(te.getIdEspecialidad());
+            if (esp != null) {
+                resultado.add(esp);
+            }
+        }
+
+        return resultado;
+    }
+
 }

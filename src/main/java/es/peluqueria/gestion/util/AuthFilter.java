@@ -72,11 +72,7 @@ public class AuthFilter implements Filter {
                 return;
             }
 
-            int tipo = ((es.peluqueria.gestion.modelo.Usuario) session.getAttribute("usuario")).getTipoUsuario();
-            if (tipo != 1) { // no admin
-                response.sendRedirect("sinPermiso.jsp");
-                return;
-            }
+            
         }
 
         // 4. Acceso general al controlador de servicios, especialidades, etc (solo admin)
