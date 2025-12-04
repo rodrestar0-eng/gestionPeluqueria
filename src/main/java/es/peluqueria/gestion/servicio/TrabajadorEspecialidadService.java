@@ -22,6 +22,10 @@ public class TrabajadorEspecialidadService {
     public void eliminarAsignacion(int idTrabajador, int idEspecialidad) {
         dao.eliminarAsignacion(idTrabajador, idEspecialidad);
     }
+    public List<Integer> obtenerTrabajadoresPorEspecialidad(int idEspecialidad) {
+        return dao.obtenerTrabajadoresPorEspecialidad(idEspecialidad);
+    }
+
 
     // ⭐ MÉTODO CORRECTO PARA DEVOLVER ESPECIALIDADES COMPLETAS
     public List<Especialidad> obtenerEspecialidadesCompletas(int idTrabajador) {

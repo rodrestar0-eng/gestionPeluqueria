@@ -14,6 +14,46 @@ public class ClienteService {
         this.clienteDAO = new ClienteDAO();
     }
 
+    // ------------------------------------
+    // MÉTODO NUEVO: Comprobar si existe email
+    // ------------------------------------
+    public boolean existeEmail(String email) {
+        try {
+            Cliente c = clienteDAO.obtenerPorEmail(email);
+            return c != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return true; // por seguridad, asumimos que existe
+        }
+    }
+
+    // ------------------------------------
+    // MÉTODO NUEVO: Comprobar si existe telefono
+    // ------------------------------------
+    public boolean existeTelefono(String tel) {
+        try {
+            Cliente c = clienteDAO.obtenerPorTelefono(tel);
+            return c != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
+
+    public String obtenerNombreCompletoPorId(int idCliente) {
+        try {
+            Cliente c = clienteDAO.obtenerPorId(idCliente);
+            if (c != null) {
+                return c.getNombre() + " " + c.getApellido();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Cliente desconocido";
+    }
+
+
     // Registro (hashea contraseña)
     public boolean registrarCliente(Cliente cliente) {
         try {
@@ -23,14 +63,18 @@ public class ClienteService {
             if (cliente.getTelefono() != null && !cliente.getTelefono().isBlank()) {
                 if (clienteDAO.obtenerPorTelefono(cliente.getTelefono()) != null) return false;
             }
+
             String hashed = HashUtil.hashPassword(cliente.getContrasena());
             cliente.setContrasena(hashed);
+
             return clienteDAO.insertar(cliente);
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
+
 
     // Login (compara hash)
     public Cliente login(String email, String contrasena) {
@@ -45,21 +89,26 @@ public class ClienteService {
         }
     }
 
+
     // CRUD y finders
     public Cliente obtenerPorId(int id) {
-        try { return clienteDAO.obtenerPorId(id); } catch (Exception e) { e.printStackTrace(); return null; }
+        try { return clienteDAO.obtenerPorId(id); } 
+        catch (Exception e) { e.printStackTrace(); return null; }
     }
 
     public Cliente obtenerPorEmail(String email) {
-        try { return clienteDAO.obtenerPorEmail(email); } catch (Exception e) { e.printStackTrace(); return null; }
+        try { return clienteDAO.obtenerPorEmail(email); } 
+        catch (Exception e) { e.printStackTrace(); return null; }
     }
 
     public Cliente obtenerPorTelefono(String telefono) {
-        try { return clienteDAO.obtenerPorTelefono(telefono); } catch (Exception e) { e.printStackTrace(); return null; }
+        try { return clienteDAO.obtenerPorTelefono(telefono); } 
+        catch (Exception e) { e.printStackTrace(); return null; }
     }
 
     public List<Cliente> listarTodos() {
-        try { return clienteDAO.listarTodos(); } catch (Exception e) { e.printStackTrace(); return null; }
+        try { return clienteDAO.listarTodos(); } 
+        catch (Exception e) { e.printStackTrace(); return null; }
     }
 
     public boolean actualizarCliente(Cliente cliente) {
@@ -80,6 +129,7 @@ public class ClienteService {
     }
 
     public boolean eliminarCliente(int id) {
-        try { return clienteDAO.eliminar(id); } catch (Exception e) { e.printStackTrace(); return false; }
+        try { return clienteDAO.eliminar(id); } 
+        catch (Exception e) { e.printStackTrace(); return false; }
     }
 }

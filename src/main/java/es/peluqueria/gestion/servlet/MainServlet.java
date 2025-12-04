@@ -41,7 +41,7 @@ public class MainServlet extends HttpServlet {
                 break;
 
             default:
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/index.jsp").forward(request, response);
                 break;
         }
     }
@@ -106,21 +106,29 @@ public class MainServlet extends HttpServlet {
         }
 
         // Intentar login como trabajador (usuario)
+     // Intentar login como trabajador (usuario)
         Usuario usuario = usuarioService.obtenerPorEmail(email);
 
-        if (usuario != null && usuario.getContrasena().equals(password) || HashUtil.checkPassword(password, usuario.getContrasena())) {
+        if (usuario != null) {
 
-            HttpSession sesion = request.getSession();
-            sesion.setAttribute("usuario", usuario);
+            boolean passwordCorrecta = 
+                    usuario.getContrasena().equals(password) || 
+                    HashUtil.checkPassword(password, usuario.getContrasena());
 
-            if (usuario.getTipoUsuario() == 1) { // ADMIN
-            	response.sendRedirect("admin?accion=panel");
-                return;
-            }
+            if (passwordCorrecta) {
 
-            if (usuario.getTipoUsuario() == 2 || usuario.getTipoUsuario() == 3) { // PELUQUERO
-            	response.sendRedirect(request.getContextPath() +"/jspUsuario/indexUsuario.jsp");
-                return;
+                HttpSession sesion = request.getSession();
+                sesion.setAttribute("usuario", usuario);
+
+                if (usuario.getTipoUsuario() == 1) { // ADMIN
+                    response.sendRedirect("admin?accion=panel");
+                    return;
+                }
+
+                if (usuario.getTipoUsuario() == 2 || usuario.getTipoUsuario() == 3) { // PELUQUERO
+                    response.sendRedirect(request.getContextPath() + "/jspUsuario/indexUsuario.jsp");
+                    return;
+                }
             }
         }
 

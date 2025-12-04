@@ -13,97 +13,124 @@
     List<Cita> citas = (List<Cita>) request.getAttribute("citas");
 %>
 
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Mis Citas</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .table th {
+            background-color: #e9ecef;
+            border-top: none;
+            font-weight: 600;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #f1f3f4;
+        }
+        .badge-pendiente {
+            background-color: #ffc107;
+        }
+        .badge-completada {
+            background-color: #28a745;
+        }
+        .badge-cancelada {
+            background-color: #dc3545;
+        }
+    </style>
 </head>
 
-<body>
-
-<div class="container mt-4">
-
-    <h2 class="fw-bold mb-4">Mis Citas</h2>
-
-    <div class="mb-3">
-	<a href="cliente?accion=panel" class="btn btn-secondary">⬅ Volver al Panel</a>
-	<a href="cita?accion=crearFormulario" class="btn btn-primary">+ Nueva Cita</a>
+<body class="bg-light">
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="display-4 fw-bold text-center">Mis Citas</h1>
+            <p class="lead text-center">Gestiona tus citas pasadas, presentes y futuras.</p>
+        </div>
     </div>
 
-    <%
-        if (citas == null || citas.isEmpty()) {
-    %>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="cliente?accion=panel" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Volver al Panel
+            </a>
+            <a href="cita?accion=crearFormulario" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Nueva Cita
+            </a>
+        </div>
 
-    <div class="alert alert-info text-center">
-        No tienes citas registradas.
-    </div>
-
-    <%
-        } else {
-    %>
-
-    <table class="table table-hover table-striped mt-3">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Fecha</th>
-                <th>Hora Inicio</th>
-                <th>Hora Fin</th>
-                <th>Estado</th>
-                <th></th>
-            </tr>
-        </thead>
-
-        <tbody>
         <%
-            for (Cita c : citas) {
-
-                String estadoTxt = "Desconocido";
-
-                if (c.getEstado() == 1) {
-                    estadoTxt = "Pendiente";
-                } else if (c.getEstado() == 2) {
-                    estadoTxt = "Completada";
-                } else if (c.getEstado() == 3) {
-                    estadoTxt = "Cancelada";
-                }
+            if (citas == null || citas.isEmpty()) {
         %>
+            <div class="alert alert-info text-center" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i>No tienes citas registradas.
+            </div>
+        <%
+            } else {
+        %>
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Hora Inicio</th>
+                                    <th>Hora Fin</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <%
+                                for (Cita c : citas) {
+                                    String estadoTxt = "Desconocido";
+                                    String badgeClass = "badge-secondary";
 
-            <tr>
-                <td><%= c.getIdCita() %></td>
-                <td><%= c.getFechaCita() %></td>
-                <td><%= c.getHoraInicio() %></td>
-                <td><%= c.getHoraFin() %></td>
-                <td><%= estadoTxt %></td>
-
-                <td class="text-end">
-                    <a href="<%= request.getContextPath() %>/cita?accion=ver&id=<%= c.getIdCita() %>"
-                       class="btn btn-sm btn-info">
-                        Ver
-                    </a>
-
-                    <% if (c.getEstado() == 1) { %>
-                        <a href="<%= request.getContextPath() %>/cita?accion=cancelar&id=<%= c.getIdCita() %>"
-                           class="btn btn-sm btn-danger"
-                           onclick="return confirm('¿Seguro que deseas cancelar esta cita?');">
-                           Cancelar
-                        </a>
-                    <% } %>
-                </td>
-            </tr>
-
+                                    if (c.getEstado() == 1) {
+                                        estadoTxt = "Pendiente";
+                                        badgeClass = "badge-pendiente";
+                                    } else if (c.getEstado() == 2) {
+                                        estadoTxt = "Completada";
+                                        badgeClass = "badge-completada";
+                                    } else if (c.getEstado() == 3) {
+                                        estadoTxt = "Cancelada";
+                                        badgeClass = "badge-cancelada";
+                                    }
+                            %>
+                                <tr>
+                                    <td><%= c.getIdCita() %></td>
+                                    <td><%= c.getFechaCita() %></td>
+                                    <td><%= c.getHoraInicio() %></td>
+                                    <td><%= c.getHoraFin() %></td>
+                                    <td><span class="badge <%= badgeClass %>"><%= estadoTxt %></span></td>
+                                    <td class="text-end">
+                                        <a href="<%= request.getContextPath() %>/cita?accion=ver&id=<%= c.getIdCita() %>" class="btn btn-sm btn-info me-1">
+                                            <i class="bi bi-eye"></i> Ver
+                                        </a>
+                                        <% if (c.getEstado() == 1) { %>
+                                            <a href="<%= request.getContextPath() %>/cita?accion=cancelar&id=<%= c.getIdCita() %>" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que deseas cancelar esta cita?');">
+                                                <i class="bi bi-x-circle"></i> Cancelar
+                                            </a>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         <% } %>
-        </tbody>
-    </table>
+    </div>
 
-    <% } %>
-
-</div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

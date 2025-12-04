@@ -1,71 +1,172 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="es.peluqueria.gestion.modelo.Usuario" %>
-<%@ page import="java.util.List" %>
-<%@ page import="es.peluqueria.gestion.modelo.Cita" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.*, es.peluqueria.gestion.modelo.Cita" %>
+<%
+    List<Cita> citas = (List<Cita>) request.getAttribute("misCitas");
+    String filtroEstado = request.getParameter("estado");
+    String filtroServicio = request.getParameter("servicio");
+%>
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Mis Citas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <%
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null || usuario.getTipoUsuario() != 2) {
-            response.sendRedirect("indexUsuario.jsp");
-            return;
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
         }
-        List<Cita> misCitas = (List<Cita>) request.getAttribute("misCitas");
-    %>
-    
+        .estado-0 { background-color: #f8d7da !important; } /* Cancelada */
+        .estado-1 { background-color: #d1e7dd !important; } /* Activa */
+        .estado-2 { background-color: #fff3cd !important; } /* Pendiente */
+        .estado-3 { background-color: #cfe2ff !important; } /* Completada */
+
+        .tabla-scroll {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        th { position: sticky; top: 0; background: white; z-index: 1; }
+
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="bi bi-calendar-check"></i> Mis Citas</a>
+        </div>
+    </nav>
+
     <div class="container mt-4">
-        <div class="card">
-            <div class="card-header">
-                <h2>Historial de Citas</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0"><i class="bi bi-calendar-check"></i> Mis Citas</h2>
+                        <a href="<%= request.getContextPath() %>/usuario?accion=inicio" class="btn btn-light btn-sm">
+                            <i class="bi bi-arrow-left-circle"></i> Volver
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <!-- Filtros -->
+                        <form method="get" class="row g-3 mb-4">
+                            <input type="hidden" name="accion" value="misCitasPeluquero">
+
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="bi bi-flag"></i> Estado</label>
+                                <select name="estado" class="form-select">
+                                    <option value="">Todos</option>
+                                    <option value="1" <%= "1".equals(filtroEstado) ? "selected" : "" %>>Activa</option>
+                                    <option value="2" <%= "2".equals(filtroEstado) ? "selected" : "" %>>Pendiente</option>
+                                    <option value="3" <%= "3".equals(filtroEstado) ? "selected" : "" %>>Completada</option>
+                                    <option value="0" <%= "0".equals(filtroEstado) ? "selected" : "" %>>Cancelada</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="bi bi-scissors"></i> Servicio</label>
+                                <select name="servicio" class="form-select">
+                                    <option value="">Todos</option>
+                                    <% if (citas != null) {
+                                        Set<String> servicios = new LinkedHashSet<>();
+                                        for (Cita c : citas) servicios.add(c.getNombreServicio());
+                                        for (String s : servicios) { %>
+                                            <option value="<%= s %>" <%= s.equals(filtroServicio) ? "selected" : "" %>>
+                                                <%= s %>
+                                            </option>
+                                    <% }} %>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button class="btn btn-primary w-100">
+                                    <i class="bi bi-funnel"></i> Filtrar
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Tabla de citas -->
+                        <div class="table-responsive tabla-scroll">
+                            <table class="table table-bordered table-hover text-center">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th><i class="bi bi-calendar-date"></i> Fecha</th>
+                                        <th><i class="bi bi-clock"></i> Hora</th>
+                                        <th><i class="bi bi-scissors"></i> Servicio</th>
+                                        <th><i class="bi bi-flag"></i> Estado</th>
+                                        <th><i class="bi bi-gear"></i> Acciones</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                <% if (citas != null && !citas.isEmpty()) {
+                                    for (Cita c : citas) {
+
+                                        if (filtroEstado != null && !filtroEstado.isEmpty() &&
+                                            c.getEstado() != Integer.parseInt(filtroEstado)) continue;
+
+                                        if (filtroServicio != null && !filtroServicio.isEmpty() &&
+                                            !c.getNombreServicio().equals(filtroServicio)) continue;
+                                %>
+
+                                    <tr class="estado-<%= c.getEstado() %>">
+                                        <td><%= c.getFechaCita() %></td>
+                                        <td><%= c.getHoraInicio() %> - <%= c.getHoraFin() %></td>
+                                        <td><%= c.getNombreServicio() %></td>
+
+                                        <td>
+                                            <% switch (c.getEstado()) {
+                                                case 1: out.print("Activa"); break;
+                                                case 2: out.print("Pendiente"); break;
+                                                case 3: out.print("Completada"); break;
+                                                case 0: out.print("Cancelada"); break;
+                                            } %>
+                                        </td>
+
+                                        <td>
+                                            <a href="cita?accion=detallePeluquero&id=<%= c.getIdCita() %>"
+                                               class="btn btn-info btn-sm">
+                                                <i class="bi bi-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                <% }} else { %>
+                                    <tr><td colspan="5" class="text-muted">No hay citas disponibles</td></tr>
+                                <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr><th>ID Cita</th><th>ID Cliente</th><th>ID Servicio</th><th>Fecha</th><th>Hora Inicio</th><th>Hora Fin</th><th>Estado</th><th>Acción</th></tr>
-                    </thead>
-                    <tbody>
-                        <%
-                            if (misCitas != null) {
-                                for (Cita cita : misCitas) {
-                        %>
-                            <tr>
-                                <td><%= cita.getIdCita() %></td>
-                                <td><%= cita.getIdCliente() %></td>
-                                <td><%= cita.getIdServicio() %></td>
-                                <td><%= cita.getFechaCita() %></td>
-                                <td><%= cita.getHoraInicio() %></td>
-                                <td><%= cita.getHoraFin() %></td>
-                                <td><%= cita.getEstado() == 1 ? "Pendiente" : cita.getEstado() == 2 ? "Completada" : "Cancelada" %></td>
-                                <td>
-                                    <form method="post" action="CitaServlet" class="d-inline">
-                                        <input type="hidden" name="action" value="updateEstado">
-                                        <input type="hidden" name="idCita" value="<%= cita.getIdCita() %>">
-                                        <select name="nuevoEstado" class="form-select d-inline w-auto me-2">
-                                            <option value="1" <%= cita.getEstado() == 1 ? "selected" : "" %>>Pendiente</option>
-                                            <option value="2" <%= cita.getEstado() == 2 ? "selected" : "" %>>Completada</option>
-                                            <option value="3" <%= cita.getEstado() == 3 ? "selected" : "" %>>Cancelada</option>
-                                        </select>
-                                        <button type="submit" class="btn btn-primary btn-sm">Actualizar</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        <%
-                                }
-                            }
-                        %>
-                    </tbody>
-                </table>
-					<a href="<%= request.getContextPath() %>/usuario?accion=inicio" 
-   						class="btn btn-secondary">Volver</a>            </div>
         </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

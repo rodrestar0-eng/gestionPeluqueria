@@ -21,8 +21,12 @@
     <meta charset="UTF-8">
     <title>Gestionar Horarios</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
+        body {
+            background-color: #f8f9fa;
+        }
         .hour-column {
             width: 90px;
             background: #f8f9fa;
@@ -55,119 +59,147 @@
             padding: 15px;
             border-radius: 12px;
             box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-
             /* SCROLL vertical */
             max-height: 500px;
             overflow-y: auto;
         }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+        }
     </style>
 </head>
 
-<body class="p-4" style="background:#eef1f5;">
+<body class="p-4">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="bi bi-calendar-week"></i> Gestionar Horarios</a>
+        </div>
+    </nav>
 
     <!-- BARRA SUPERIOR -->
     <div class="top-bar d-flex align-items-center mb-4 text-white">
         <!-- Icono Bootstrap en lugar de emoji roto -->
         <a href="<%= request.getContextPath() %>/usuario?accion=inicio"
-           class="btn btn-light btn-sm">
-            <span class="me-1">🏠</span> Volver al inicio
+           class="btn btn-light btn-sm me-2">
+            <i class="bi bi-house-door"></i> Volver al inicio
         </a>
 
-        <a class="btn btn-outline-light btn-sm"
+        <a class="btn btn-outline-light btn-sm me-2"
            href="horarios?idTrabajador=<%=idTrabajador%>&weekStart=<%=weekPrev%>">
-            ← Semana anterior
+            <i class="bi bi-chevron-left"></i> Semana anterior
         </a>
 
         <span class="mx-3 fs-5">
-            <strong>Semana de <%= weekStart %></strong>
+            <strong><i class="bi bi-calendar-week"></i> Semana de <%= weekStart %></strong>
         </span>
 
-        <a class="btn btn-outline-light btn-sm"
+        <a class="btn btn-outline-light btn-sm me-2"
            href="horarios?idTrabajador=<%=idTrabajador%>&weekStart=<%=weekNext%>">
-            Semana siguiente →
+            Semana siguiente <i class="bi bi-chevron-right"></i>
         </a>
 
         <div class="flex-grow-1"></div>
 
         <span class="text-light me-2">
-            👤 Trabajador #<%= idTrabajador %>
+            <i class="bi bi-person"></i> Trabajador #<%= idTrabajador %>
         </span>
     </div>
 
-    <div class="table-wrapper">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="card shadow">
+                    <div class="card-body p-0">
+                        <div class="table-wrapper">
+                            <table class="table table-bordered table-hover text-center mb-0">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th class="hour-column"><i class="bi bi-clock"></i> Hora</th>
+                                        <% for (LocalDate d : fechas) { %>
+                                            <th>
+                                                <%= d.getDayOfWeek().toString().substring(0,1).toUpperCase()
+                                                    + d.getDayOfWeek().toString().substring(1).toLowerCase() %>
+                                                <br>
+                                                <small class="text-muted"><%= d %></small>
+                                            </th>
+                                        <% } %>
+                                    </tr>
+                                </thead>
 
-        <table class="table table-bordered table-hover text-center">
-            <thead class="table-secondary">
-                <tr>
-                    <th class="hour-column">Hora</th>
-                    <% for (LocalDate d : fechas) { %>
-                        <th>
-                            <%= d.getDayOfWeek().toString().substring(0,1).toUpperCase()
-                                + d.getDayOfWeek().toString().substring(1).toLowerCase() %>
-                            <br>
-                            <small class="text-muted"><%= d %></small>
-                        </th>
-                    <% } %>
-                </tr>
-            </thead>
+                                <tbody>
+                                    <% for (int h = 9; h <= 20; h++) {
+                                           String horaLabel = String.format("%02d:00", h);
+                                    %>
 
-            <tbody>
-                <% for (int h = 9; h <= 20; h++) {
-                       String horaLabel = String.format("%02d:00", h);
-                %>
+                                    <tr>
+                                        <td class="hour-column"><%= horaLabel %></td>
 
-                <tr>
-                    <td class="hour-column"><%= horaLabel %></td>
+                                        <% for (LocalDate dia : fechas) {
 
-                    <% for (LocalDate dia : fechas) {
+                                               List<Cita> lista = citasPorDia.get(dia);
+                                               Cita encontrada = null;
 
-                           List<Cita> lista = citasPorDia.get(dia);
-                           Cita encontrada = null;
+                                               if (lista != null) {
+                                                   for (Cita c : lista) {
+                                                       if (c.getHoraInicio() != null &&
+                                                           c.getHoraInicio().startsWith(String.format("%02d", h))) {
+                                                           encontrada = c;
+                                                           break;
+                                                       }
+                                                   }
+                                               }
+                                        %>
 
-                           if (lista != null) {
-                               for (Cita c : lista) {
-                                   if (c.getHoraInicio() != null &&
-                                       c.getHoraInicio().startsWith(String.format("%02d", h))) {
-                                       encontrada = c;
-                                       break;
-                                   }
-                               }
-                           }
-                    %>
+                                        <td style="height: 70px;">
 
-                    <td style="height: 70px;">
+                                            <% if (encontrada != null) { %>
+                                                <div class="cita estado-<%= encontrada.getEstado() %>">
+                                                    <strong><%= encontrada.getNombreCliente() %></strong>
+                                                    <div><%= encontrada.getNombreServicio() %></div>
+                                                    <div class="small"><%= encontrada.getHoraInicio() %> - <%= encontrada.getHoraFin() %></div>
 
-                        <% if (encontrada != null) { %>
-                            <div class="cita estado-<%= encontrada.getEstado() %>">
-                                <strong><%= encontrada.getNombreCliente() %></strong>
-                                <div><%= encontrada.getNombreServicio() %></div>
-                                <div class="small"><%= encontrada.getHoraInicio() %> - <%= encontrada.getHoraFin() %></div>
+                                                    <form method="post" action="horarios" class="mt-1">
+                                                        <input type="hidden" name="accion" value="cambiarEstadoCita">
+                                                        <input type="hidden" name="idCita" value="<%= encontrada.getIdCita() %>">
+                                                        <input type="hidden" name="idTrabajador" value="<%= idTrabajador %>">
+                                                        <input type="hidden" name="weekStart" value="<%= weekStart %>">
 
-                                <form method="post" action="horarios" class="mt-1">
-                                    <input type="hidden" name="accion" value="cambiarEstadoCita">
-                                    <input type="hidden" name="idCita" value="<%= encontrada.getIdCita() %>">
-                                    <input type="hidden" name="idTrabajador" value="<%= idTrabajador %>">
-                                    <input type="hidden" name="weekStart" value="<%= weekStart %>">
+                                                        <select name="estado" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                            <option value="1" <%= encontrada.getEstado()==1 ? "selected":"" %>>Pendiente</option>
+                                                            <option value="2" <%= encontrada.getEstado()==2 ? "selected":"" %>>Completada</option>
+                                                            <option value="3" <%= encontrada.getEstado()==3 ? "selected":"" %>>Cancelada</option>
+                                                        </select>
+                                                    </form>
+                                                </div>
+                                            <% } %>
 
-                                    <select name="estado" class="form-select form-select-sm" onchange="this.form.submit()">
-                                        <option value="1" <%= encontrada.getEstado()==1 ? "selected":"" %>>Pendiente</option>
-                                        <option value="2" <%= encontrada.getEstado()==2 ? "selected":"" %>>Completada</option>
-                                        <option value="3" <%= encontrada.getEstado()==3 ? "selected":"" %>>Cancelada</option>
-                                    </select>
-                                </form>
-                            </div>
-                        <% } %>
+                                        </td>
 
-                    </td>
+                                        <% } %>
+                                    </tr>
 
-                    <% } %>
-                </tr>
-
-                <% } %>
-            </tbody>
-        </table>
-
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -70,6 +70,28 @@ public class TrabajadorEspecialidadDAO {
             return false;
         }
     }
+    public List<Integer> obtenerTrabajadoresPorEspecialidad(int idEspecialidad) {
+
+        List<Integer> lista = new ArrayList<>();
+        String sql = "SELECT ID_TRABAJADOR FROM TRABAJADOR_ESPECIALIDAD WHERE ID_ESPECIALIDAD = ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idEspecialidad);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                lista.add(rs.getInt("ID_TRABAJADOR"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+
 
     public boolean eliminarEspecialidadesDeTrabajador(int idTrabajador) {
         String sql = "DELETE FROM TRABAJADOR_ESPECIALIDAD WHERE ID_TRABAJADOR = ?";

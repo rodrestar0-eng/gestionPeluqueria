@@ -82,11 +82,14 @@ public class UsuarioController extends HttpServlet {
             case "actualizarMiPerfil":
                 actualizarMiPerfil(request, response);
                 break;
+               
+            case "logout":
+            	cerrarSesion(request, response);
                 
                
 
             default:
-                response.sendRedirect("index.jsp");
+                response.sendRedirect("jsp/index.jsp");
                 break;
         }
     }

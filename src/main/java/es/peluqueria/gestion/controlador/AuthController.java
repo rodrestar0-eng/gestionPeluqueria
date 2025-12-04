@@ -53,7 +53,7 @@ public class AuthController extends HttpServlet {
                 case 2: response.sendRedirect("usuario/indexUsuario.jsp"); break;
                 case 3: response.sendRedirect("usuario/indexUsuario.jsp"); break;
                 default:
-                    response.sendRedirect("/jsp/login.jsp");
+                    response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
             }
         }
     }

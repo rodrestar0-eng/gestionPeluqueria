@@ -199,6 +199,33 @@
 	        }
 	        return usuarios;
 	    }
+	    
+	    public List<Usuario> listarPeluquerosPorEspecialidad(int idEspecialidad) throws SQLException {
+	        List<Usuario> lista = new ArrayList<>();
+
+	        String sql = """
+	            SELECT u.* 
+	            FROM USUARIOS u
+	            INNER JOIN TRABAJADOR_ESPECIALIDAD ue ON u.ID_USUARIO = ue.ID_USUARIO
+	            WHERE ue.ID_ESPECIALIDAD = ? 
+	              AND u.TIPO_USUARIO = 2
+	            ORDER BY u.NOMBRE
+	        """;
+
+	        try (Connection con = DBConnection.getConnection();
+	             PreparedStatement ps = con.prepareStatement(sql)) {
+
+	            ps.setInt(1, idEspecialidad);
+	            ResultSet rs = ps.executeQuery();
+
+	            while (rs.next()) {
+	                lista.add(mapearUsuario(rs));  // <-- ahora se mapea COMPLETO correctamente
+	            }
+	        }
+
+	        return lista;
+	    }
+
 	
 	    // =========================
 	    // MÉTODO AUXILIAR: MAPEAR RESULTSET → OBJETO

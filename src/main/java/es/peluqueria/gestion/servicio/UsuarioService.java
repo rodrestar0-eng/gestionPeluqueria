@@ -105,6 +105,18 @@ public class UsuarioService {
         Usuario u = usuarioDAO.obtenerPorId(idUsuario);
         return (u != null) ? u.getNombre() : "Sin asignar";
     }
+    
+    public List<Usuario> listarPeluquerosPorEspecialidad(Integer idEspecialidad) {
+        if (idEspecialidad == null) return java.util.Collections.emptyList();
+        try {
+            return usuarioDAO.listarPeluquerosPorEspecialidad(idEspecialidad);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return java.util.Collections.emptyList();
+        }
+    }
+
+
 
 
 

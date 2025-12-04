@@ -1,10 +1,13 @@
 package es.peluqueria.gestion.controlador;
 
+import es.peluqueria.gestion.DAO.EspecialidadServicioDAO;
 import es.peluqueria.gestion.modelo.Cita;
 import es.peluqueria.gestion.modelo.Cliente;
 import es.peluqueria.gestion.modelo.Servicio;
 import es.peluqueria.gestion.modelo.Usuario;
+import es.peluqueria.gestion.servicio.BloqueoPeluqueroService;
 import es.peluqueria.gestion.servicio.CitaService;
+import es.peluqueria.gestion.servicio.ClienteService;
 import es.peluqueria.gestion.servicio.ServicioService;
 import es.peluqueria.gestion.servicio.UsuarioService;
 import jakarta.servlet.*;
@@ -12,7 +15,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,12 +27,16 @@ public class CitaController extends HttpServlet {
     private CitaService citaService;
     private UsuarioService usuarioService;
     private ServicioService servicioService;
+    private BloqueoPeluqueroService bloqueoService;
+
 
     @Override
     public void init() throws ServletException {
         this.citaService = new CitaService();
         this.usuarioService = new UsuarioService();
         this.servicioService = new ServicioService();
+        this.bloqueoService = new BloqueoPeluqueroService();
+
     }
 
     private void prepararFormularioCrear(HttpServletRequest request, HttpServletResponse response)
@@ -71,6 +80,14 @@ public class CitaController extends HttpServlet {
             case "misCitasPeluquero":
                 listarCitasPeluquero(request, response);
                 break;
+                
+            case "detallePeluquero":
+                verDetallePeluquero(request, response);
+                break;
+            case "filtrarPeluqueros":
+                filtrarPeluqueros(request, response);
+                break;
+
                 
             case "crearFormulario":
                 prepararFormularioCrear(request, response);
@@ -137,11 +154,33 @@ public class CitaController extends HttpServlet {
         try {
             Cita cita = new Cita();
             cita.setIdCliente(Integer.parseInt(request.getParameter("idCliente")));
-            cita.setIdPeluquero(Integer.parseInt(request.getParameter("idPeluquero")));
+            int idPeluquero = Integer.parseInt(request.getParameter("idPeluquero"));
+            cita.setIdPeluquero(idPeluquero);
             cita.setIdServicio(Integer.parseInt(request.getParameter("idServicio")));
             cita.setFechaCita(java.time.LocalDate.parse(request.getParameter("fecha")));
             cita.setHoraInicio(request.getParameter("horaInicio"));
             cita.setEstado(1);
+
+            // --------------- NUEVO: comprobación de bloqueos ---------------
+            // Si el peluquero tiene un bloqueo que incluye la fecha solicitada,
+            // no permitimos crear la cita y mostramos mensaje de error.
+            LocalDate fechaSolicitada = cita.getFechaCita();
+            if (bloqueoService != null && bloqueoService.estaBloqueado(idPeluquero, fechaSolicitada)) {
+                request.setAttribute("error", "No se pudo registrar la cita: el peluquero no está disponible en esa fecha.");
+                // Recargar datos necesarios para el formulario y forward al JSP
+                List<Usuario> peluqueros = usuarioService.listarPeluqueros();
+                List<Servicio> servicios = servicioService.listarTodos();
+                request.setAttribute("peluqueros", peluqueros);
+                request.setAttribute("servicios", servicios);
+                // Opcional: mantener valores seleccionados para mejorar UX
+                request.setAttribute("selectedPeluquero", idPeluquero);
+                request.setAttribute("selectedServicio", cita.getIdServicio());
+                request.setAttribute("selectedFecha", fechaSolicitada.toString());
+                request.setAttribute("selectedHora", cita.getHoraInicio());
+                request.getRequestDispatcher("/jspCliente/crearCita.jsp").forward(request, response);
+                return;
+            }
+            // ----------------------------------------------------------------
 
             boolean ok = citaService.registrarCita(cita);
 
@@ -149,15 +188,55 @@ public class CitaController extends HttpServlet {
                 response.sendRedirect("cita?accion=misCitasCliente");
             } else {
                 request.setAttribute("error", "No se pudo registrar la cita.");
+                // recargar peluqueros/servicios antes de forward
+                List<Usuario> peluqueros = usuarioService.listarPeluqueros();
+                List<Servicio> servicios = servicioService.listarTodos();
+                request.setAttribute("peluqueros", peluqueros);
+                request.setAttribute("servicios", servicios);
                 request.getRequestDispatcher("/jspCliente/crearCita.jsp").forward(request, response);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error al procesar la cita.");
+            // recargar peluqueros/servicios antes de forward
+            try {
+                List<Usuario> peluqueros = usuarioService.listarPeluqueros();
+                List<Servicio> servicios = servicioService.listarTodos();
+                request.setAttribute("peluqueros", peluqueros);
+                request.setAttribute("servicios", servicios);
+            } catch (Exception ignore) {}
             request.getRequestDispatcher("/jspCliente/crearCita.jsp").forward(request, response);
         }
     }
+
+    private void verDetallePeluquero(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            Cita cita = citaService.obtenerPorId(id);
+            if (cita == null) {
+                response.sendRedirect("cita?accion=misCitasPeluquero");
+                return;
+            }
+
+            ClienteService clienteService = new ClienteService();
+            String nombreCliente = clienteService.obtenerNombreCompletoPorId(cita.getIdCliente());
+
+            request.setAttribute("cita", cita);
+            request.setAttribute("nombreCliente", nombreCliente);
+
+            request.getRequestDispatcher("jspUsuario/detalleCitaPeluquero.jsp")
+                    .forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("cita?accion=misCitasPeluquero");
+        }
+    }
+
 
 
     private void mostrarCita(HttpServletRequest request, HttpServletResponse response)
@@ -257,21 +336,91 @@ public class CitaController extends HttpServlet {
         request.getRequestDispatcher("/jspCliente/misCitas.jsp").forward(request, response);
     }
 
-
     private void listarCitasPeluquero(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession sesion = request.getSession(false);
         if (sesion == null || sesion.getAttribute("usuario") == null) {
-        	response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
             return;
         }
 
         Usuario peluquero = (Usuario) sesion.getAttribute("usuario");
 
         List<Cita> citas = citaService.listarPorPeluquero(peluquero.getIdUsuario());
-        request.setAttribute("citas", citas);
 
+        ClienteService clienteService = new ClienteService();
+
+        // Añadir nombre completo a cada cita
+        for (Cita c : citas) {
+            c.setNombreCliente(clienteService.obtenerNombreCompletoPorId(c.getIdCliente()));
+        }
+
+        request.setAttribute("misCitas", citas);
         request.getRequestDispatcher("jspUsuario/misCitas.jsp").forward(request, response);
     }
+    
+    private void filtrarPeluqueros(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        String sIdServicio = request.getParameter("idServicio");
+        if (sIdServicio == null || sIdServicio.isBlank()) {
+            out.println("<option value=''>Seleccione un servicio primero</option>");
+            return;
+        }
+
+        int idServicio;
+        try {
+            idServicio = Integer.parseInt(sIdServicio);
+        } catch (NumberFormatException e) {
+            out.println("<option value=''>Servicio inválido</option>");
+            return;
+        }
+
+        // 🔥 USAMOS AHORA EL SERVICE, NO EL DAO 🔥
+        Integer idEspecialidad = servicioService.obtenerEspecialidadDeServicio(idServicio);
+
+        if (idEspecialidad == null) {
+            out.println("<option value=''>No hay peluqueros para este servicio</option>");
+            return;
+        }
+
+        // Obtener los peluqueros con esa especialidad
+        List<Usuario> peluqueros = usuarioService.listarPeluquerosPorEspecialidad(idEspecialidad);
+        if(peluqueros != null)
+        out.println("<option value=''>Seleccione...</option>");
+
+        if (peluqueros == null || peluqueros.isEmpty()) {
+            out.println("<option value=''>No hay peluqueros disponibles</option>");
+            return;
+        }
+
+        for (Usuario p : peluqueros) {
+            out.printf("<option value='%d'>%s %s</option>%n",
+                    p.getIdUsuario(),
+                    p.getNombre() != null ? p.getNombre() : "",
+                    p.getApellido() != null ? p.getApellido() : "");
+        }
+    }
+
+
+//    private void listarCitasPeluquero(HttpServletRequest request, HttpServletResponse response)
+//            throws ServletException, IOException {
+//
+//        HttpSession sesion = request.getSession(false);
+//        if (sesion == null || sesion.getAttribute("usuario") == null) {
+//        	response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
+//            return;
+//        }
+//
+//        Usuario peluquero = (Usuario) sesion.getAttribute("usuario");
+//
+//        List<Cita> citas = citaService.listarPorPeluquero(peluquero.getIdUsuario());
+//        request.setAttribute("citas", citas);
+//
+//        request.getRequestDispatcher("jspUsuario/misCitas.jsp").forward(request, response);
+//    }
 }

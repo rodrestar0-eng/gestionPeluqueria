@@ -20,36 +20,98 @@
 <head>
     <meta charset="UTF-8">
     <title>Crear Usuario</title>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        body { font-family: Arial; padding: 15px; }
-        .form-box {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            width: 450px;
-        }
-        input, select {
-            width: 100%;
-            padding: 6px;
-            margin-top: 8px;
-            margin-bottom: 15px;
-        }
-        button {
-            background: #0275d8;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background: #01549b;
-        }
-        .hidden { display: none; }
+        .form-check { margin-bottom: 0.5rem; }
+        .card-body { padding: 1.5rem; }
     </style>
+</head>
 
+<body class="bg-light">
+    <div class="container-fluid mt-3">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="card-title mb-0">Crear Nuevo Usuario</h2>
+                    </div>
+                    <div class="card-body">
+                        <a href="admin?accion=panel" class="btn btn-secondary mb-4">⬅ Volver al Panel</a>
+                        
+                        <form action="admin" method="post">
+                            <input type="hidden" name="accion" value="crearUsuario">
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombre" class="form-label">Nombre:</label>
+                                    <input type="text" id="nombre" name="nombre" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="apellido" class="form-label">Apellido:</label>
+                                    <input type="text" id="apellido" name="apellido" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email:</label>
+                                    <input type="email" id="email" name="email" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefono" class="form-label">Teléfono:</label>
+                                    <input type="text" id="telefono" name="telefono" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="contrasena" class="form-label">Contraseña:</label>
+                                <input type="password" id="contrasena" name="contrasena" class="form-control" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="tipoUsuario" class="form-label">Tipo de Usuario:</label>
+                                <select name="tipoUsuario" id="tipoUsuario" class="form-select" onchange="mostrarEspecialidades()" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="1">Administrador</option>
+                                    <option value="3">Recepcionista</option>
+                                    <option value="2">Peluquero / Trabajador</option>
+                                </select>
+                            </div>
+                            
+                            <!-- ESPECIALIDADES SOLO SI TIPO = 2 -->
+                            <div id="box-especialidades" class="hidden mb-3">
+                                <label class="form-label">Especialidades del trabajador:</label>
+                                <div class="row">
+                                    <%
+                                        if (especialidades != null) {
+                                            for (Especialidad e : especialidades) {
+                                    %>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="especialidades" value="<%= e.getIdEspecialidad() %>" id="esp<%= e.getIdEspecialidad() %>">
+                                                <label class="form-check-label" for="esp<%= e.getIdEspecialidad() %>">
+                                                    <%= e.getNombre() %>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    <%
+                                            }
+                                        }
+                                    %>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">Crear Usuario</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function mostrarEspecialidades() {
             let tipo = document.getElementById("tipoUsuario").value;
@@ -59,69 +121,5 @@
             else div.style.display = "none";
         }
     </script>
-
-</head>
-
-<body>
-
-<h2>Crear Nuevo Usuario</h2>
-
-<a href="admin?accion=panel">⬅ Volver al Panel</a>
-
-<br><br>
-
-<div class="form-box">
-
-<form action="admin" method="post">
-    <input type="hidden" name="accion" value="crearUsuario">
-
-    <label>Nombre:</label>
-    <input type="text" name="nombre" required>
-
-    <label>Apellido:</label>
-    <input type="text" name="apellido" required>
-
-    <label>Email:</label>
-    <input type="email" name="email" required>
-
-    <label>Contraseña:</label>
-    <input type="password" name="contrasena" required>
-
-    <label>Teléfono:</label>
-    <input type="text" name="telefono">
-
-    <label>Tipo de Usuario:</label>
-    <select name="tipoUsuario" id="tipoUsuario" onchange="mostrarEspecialidades()" required>
-        <option value="">Seleccione...</option>
-        <option value="1">Administrador</option>
-        <option value="3">Recepcionista</option>
-        <option value="2">Peluquero / Trabajador</option>
-    </select>
-
-    <!-- ESPECIALIDADES SOLO SI TIPO = 2 -->
-    <div id="box-especialidades" class="hidden">
-        <label>Especialidades del trabajador:</label>
-
-        <%
-            if (especialidades != null) {
-                for (Especialidad e : especialidades) {
-        %>
-            <div>
-                <input type="checkbox" name="especialidades" value="<%= e.getIdEspecialidad() %>">
-                <%= e.getNombre() %>
-            </div>
-        <%
-                }
-            }
-        %>
-    </div>
-
-    <br>
-    <button type="submit">Crear Usuario</button>
-
-</form>
-
-</div>
-
 </body>
 </html>
