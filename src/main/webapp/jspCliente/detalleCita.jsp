@@ -50,7 +50,7 @@
                 <%
                     switch (cita.getEstado()) {
                         case 1: out.print("<span class='badge bg-warning text-dark'>Pendiente</span>"); break;
-                        case 2: out.print("<span class='badge bg-success'>Realizada</span>"); break;
+                        case 2: out.print("<span class='badge bg-success'>Completada</span>"); break;
                         default: out.print("<span class='badge bg-danger'>Cancelada</span>");
                     }
                 %>

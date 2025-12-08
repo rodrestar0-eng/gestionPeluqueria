@@ -49,27 +49,37 @@
                         <form action="admin" method="post">
                             <input type="hidden" name="accion" value="crearUsuario">
                             
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="nombre" class="form-label">Nombre:</label>
-                                    <input type="text" id="nombre" name="nombre" class="form-control" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="apellido" class="form-label">Apellido:</label>
-                                    <input type="text" id="apellido" name="apellido" class="form-control" required>
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">Email:</label>
-                                    <input type="email" id="email" name="email" class="form-control" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="telefono" class="form-label">Teléfono:</label>
-                                    <input type="text" id="telefono" name="telefono" class="form-control">
-                                </div>
-                            </div>
+                        <div class="row">
+    <div class="col-md-6 mb-3">
+        <label for="nombre" class="form-label">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" class="form-control" 
+               pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" 
+               title="Solo se permiten letras y espacios" 
+               required>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label for="apellido" class="form-label">Apellido:</label>
+        <input type="text" id="apellido" name="apellido" class="form-control" 
+               pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" 
+               title="Solo se permiten letras y espacios" 
+               required>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label for="email" class="form-label">Email:</label>
+        <input type="email" id="email" name="email" class="form-control" required>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label for="telefono" class="form-label">Teléfono:</label>
+        <input type="text" id="telefono" name="telefono" class="form-control" 
+               pattern="\d+" 
+               title="Solo se permiten números" 
+               required>
+    </div>
+</div>
+
                             
                             <div class="mb-3">
                                 <label for="contrasena" class="form-label">Contraseña:</label>

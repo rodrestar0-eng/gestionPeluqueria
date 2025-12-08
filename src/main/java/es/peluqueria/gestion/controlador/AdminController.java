@@ -37,7 +37,7 @@ public class AdminController extends HttpServlet {
 
         Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
         if (usuario == null || usuario.getTipoUsuario() != 1) {
-            resp.sendRedirect("login.jsp");
+            resp.sendRedirect(req.getContextPath() +"/jsp/login.jsp");
             return;
         }
 
@@ -303,7 +303,7 @@ public class AdminController extends HttpServlet {
                     s.setDescripcion(req.getParameter("descripcion"));
 
                     servicioService.actualizarServicio(s, idEspecialidad);
-                    resp.sendRedirect("admin?accion=listarServicios");
+                    resp.sendRedirect("admin?accion=panel");
                     return;
 
                 } catch (NumberFormatException nfe) {
@@ -391,7 +391,7 @@ public class AdminController extends HttpServlet {
                     }
                 }
 
-                resp.sendRedirect("admin?accion=listarUsuarios");
+                resp.sendRedirect("admin?accion=panel");
                 return;
             }
 

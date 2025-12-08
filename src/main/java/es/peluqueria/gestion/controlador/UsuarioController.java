@@ -293,7 +293,7 @@ public class UsuarioController extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("error.jsp");
+            response.sendRedirect(request.getContextPath() + "error.jsp");
         }
     }
 
@@ -303,7 +303,7 @@ public class UsuarioController extends HttpServlet {
         HttpSession sesion = request.getSession(false);
         if (sesion != null) sesion.invalidate();
 
-        response.sendRedirect("index.jsp");
+        response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
     }
     private String validarPerfil(String nombre, String apellido, String email, String telefono, int idUsuario) {
 

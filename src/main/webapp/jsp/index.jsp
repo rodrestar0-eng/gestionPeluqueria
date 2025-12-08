@@ -116,7 +116,7 @@
         <!-- Tarjeta ejemplo 1 -->
         <div class="col-md-4">
             <div class="card shadow-sm h-100">
-                <img src="img/corte.jpg" class="card-img-top" alt="Corte">
+                <img src="images/pelu2.png" class="card-img-top" alt="Corte">
                 <div class="card-body text-center">
                     <i class="bi bi-scissors text-primary fs-1 mb-3"></i>
                     <h5 class="card-title fw-bold">Corte de pelo</h5>
@@ -128,7 +128,7 @@
         <!-- Tarjeta ejemplo 2 -->
         <div class="col-md-4">
             <div class="card shadow-sm h-100">
-                <img src="img/color.jpg" class="card-img-top" alt="Color">
+                <img src="images/pelu.png" class="card-img-top" alt="Color">
                 <div class="card-body text-center">
                     <i class="bi bi-palette text-primary fs-1 mb-3"></i>
                     <h5 class="card-title fw-bold">Color y tintes</h5>
@@ -140,7 +140,7 @@
         <!-- Tarjeta ejemplo 3 -->
         <div class="col-md-4">
             <div class="card shadow-sm h-100">
-                <img src="img/peinado.jpg" class="card-img-top" alt="Peinados">
+                <img src="images/pelu3.png" class="card-img-top" alt="Peinados">
                 <div class="card-body text-center">
                     <i class="bi bi-brush text-primary fs-1 mb-3"></i>
                     <h5 class="card-title fw-bold">Peinados</h5>
@@ -160,7 +160,7 @@
 
         <div class="row align-items-center">
             <div class="col-md-6 d-flex justify-content-center mb-4 mb-md-0">
-                <img src="img/equipo.jpg" class="img-fluid rounded shadow" style="max-height: 350px; border-radius: 20px;">
+                <img src="images/equipo.png" class="img-fluid rounded shadow" style="max-height: 350px; border-radius: 20px;">
             </div>
 
             <div class="col-md-6">
