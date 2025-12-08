@@ -10,6 +10,8 @@ import es.peluqueria.gestion.modelo.Cliente;
 import es.peluqueria.gestion.modelo.Usuario;
 import es.peluqueria.gestion.modelo.Servicio;
 
+import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -95,6 +97,26 @@ public class CitaService {
             return false;
         }
     }
+    public String validarCancelacionCliente(int idCita) throws SQLException {
+
+        Cita c = citaDAO.obtenerPorId(idCita);
+
+        LocalDate fecha = c.getFechaCita();
+        LocalTime hora = LocalTime.parse(c.getHoraInicio());
+
+        LocalDateTime fechaCita = LocalDateTime.of(fecha, hora);
+        LocalDateTime ahora = LocalDateTime.now();
+
+        long horas = Duration.between(ahora, fechaCita).toHours();
+
+        if (horas < 16) {
+            return "Su cita es demasiado cercana, no es posible cancelar.";
+        }
+
+        return null;
+    }
+
+
 
     public Cita obtenerPorId(int id) {
         try {

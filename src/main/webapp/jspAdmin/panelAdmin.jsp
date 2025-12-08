@@ -98,7 +98,7 @@
 
             <a href="<%= request.getContextPath() %>/admin?accion=nuevoUsuario"
                class="btn btn-primary mt-3">
-                <i class="bi bi-person-plus me-2"></i>+ Crear Trabajador
+                <i class="bi bi-person-plus me-2"></i>+ Crear Usuario
             </a>
         </div>
     </div>

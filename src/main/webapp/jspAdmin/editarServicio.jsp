@@ -6,6 +6,8 @@
 Integer idEsp = (Integer) request.getAttribute("idEspecialidad");
 java.util.List<es.peluqueria.gestion.modelo.Especialidad> especialidades = 
      (java.util.List<es.peluqueria.gestion.modelo.Especialidad>) request.getAttribute("especialidades");
+String error = (String) request.getAttribute("error");
+
 %>
 
 <!DOCTYPE html>
@@ -20,6 +22,11 @@ java.util.List<es.peluqueria.gestion.modelo.Especialidad> especialidades =
 <body class="p-4">
 
 <h3>Editar Servicio</h3>
+<% if (error != null) { %>
+    <div class="alert alert-danger">
+        <strong>Error:</strong> <%= error %>
+    </div>
+<% } %>
 
 <form action="admin" method="post" class="mt-3">
 

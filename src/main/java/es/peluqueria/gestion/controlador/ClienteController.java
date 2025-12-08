@@ -73,11 +73,11 @@ public class ClienteController extends HttpServlet {
 
         switch (accion) {
 
-            case "registrar":                          // (YA NO SE USA)
+            case "registrar":                          
                 registrarCliente(request, response);
                 break;
 
-            case "generarCodigoRegistro":              // NUEVO
+            case "generarCodigoRegistro":              
                 generarCodigoRegistro(request, response);
                 break;
                 
@@ -128,7 +128,7 @@ public class ClienteController extends HttpServlet {
 	}
 
 	// ================================
-    // 1) GENERAR CÓDIGO - NUEVO
+    // 1) GENERAR CÓDIGO 
     // ================================
     private void generarCodigoRegistro(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -169,7 +169,7 @@ public class ClienteController extends HttpServlet {
 
 
     // ================================
-    // 2) VERIFICAR CÓDIGO - NUEVO
+    // 2) VERIFICAR CÓDIGO 
     // ================================
     private void verificarCodigo(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

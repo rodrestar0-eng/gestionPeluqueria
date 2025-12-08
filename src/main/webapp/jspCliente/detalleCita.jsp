@@ -25,10 +25,6 @@
 
     <table class="table table-bordered">
         <tr>
-            <th>ID Cita</th>
-            <td><%= cita.getIdCita() %></td>
-        </tr>
-        <tr>
             <th>Fecha</th>
             <td><%= cita.getFechaCita() %></td>
         </tr>

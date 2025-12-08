@@ -53,6 +53,15 @@
             <h1 class="display-4 fw-bold text-center">Mis Citas</h1>
             <p class="lead text-center">Gestiona tus citas pasadas, presentes y futuras.</p>
         </div>
+        <%
+    String error = (String) session.getAttribute("error");
+    if (error != null) {
+        session.removeAttribute("error");
+%>
+    <div class="alert alert-danger text-center">
+        <%= error %>
+    </div>
+<% } %>
     </div>
 
     <div class="container">
@@ -80,7 +89,7 @@
                         <table class="table table-hover table-striped mb-0">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                   
                                     <th>Fecha</th>
                                     <th>Hora Inicio</th>
                                     <th>Hora Fin</th>
@@ -106,8 +115,15 @@
                                     }
                             %>
                                 <tr>
-                                    <td><%= c.getIdCita() %></td>
-                                    <td><%= c.getFechaCita() %></td>
+                                
+                                    <td>
+    						<%
+    				    java.time.format.DateTimeFormatter formatter =
+    				        java.time.format.DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", new java.util.Locale("es", "ES"));
+   									 %>
+   					 <%= c.getFechaCita().format(formatter) %>
+								</td>
+
                                     <td><%= c.getHoraInicio() %></td>
                                     <td><%= c.getHoraFin() %></td>
                                     <td><span class="badge <%= badgeClass %>"><%= estadoTxt %></span></td>

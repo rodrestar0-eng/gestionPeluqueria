@@ -3,6 +3,8 @@
 
 <%
     Especialidad esp = (Especialidad) request.getAttribute("especialidad");
+	String error = (String) request.getAttribute("error");
+
 %>
 
 <!DOCTYPE html>
@@ -43,6 +45,11 @@ function validar() {
 <body>
 
 <h2>Editar Especialidad</h2>
+<% if (error != null) { %>
+    <div style="background:#f8d7da;color:#842029;padding:10px;border-radius:5px;margin-bottom:15px;">
+        <strong>Error:</strong> <%= error %>
+    </div>
+<% } %>
 
 <form action="admin" method="POST" onsubmit="return validar();">
     <input type="hidden" name="accion" value="actualizarEspecialidad">

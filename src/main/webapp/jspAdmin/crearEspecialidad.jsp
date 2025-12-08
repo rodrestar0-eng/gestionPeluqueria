@@ -1,5 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
-
+<%
+    String error = (String) request.getAttribute("error");
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -96,6 +98,14 @@
                 <h2 class="fw-bold">Crear Especialidad</h2>
                 <p class="text-muted">Añade una nueva especialidad al sistema</p>
             </div>
+            
+            <% if (error != null) { %>
+    <div class="alert alert-danger text-center fw-bold">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <%= error %>
+    </div>
+<% } %>
+            
 
             <form action="admin" method="POST" onsubmit="return validar();">
                 <input type="hidden" name="accion" value="crearEspecialidad">

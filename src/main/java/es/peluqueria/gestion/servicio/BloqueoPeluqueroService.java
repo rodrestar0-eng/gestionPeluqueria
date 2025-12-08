@@ -21,6 +21,28 @@ public class BloqueoPeluqueroService {
     public void eliminarBloqueo(int idBloqueo) {
         bloqueoDAO.eliminar(idBloqueo);
     }
+    public String validarBloqueo(int idTrabajador, LocalDate inicio, LocalDate fin, String motivo) {
+
+        if (inicio == null || fin == null)
+            return "Las fechas son obligatorias.";
+
+        if (inicio.isBefore(LocalDate.now()))
+            return "No puedes crear bloqueos en el pasado.";
+
+        if (fin.isBefore(inicio))
+            return "La fecha fin no puede ser anterior a la fecha inicio.";
+
+        if (motivo != null && motivo.length() > 255)
+            return "El motivo no puede superar los 255 caracteres.";
+
+        // Validar solapamiento consultando el DAO
+        if (bloqueoDAO.existeSolape(idTrabajador, inicio, fin))
+            return "Ya existe un bloqueo que se solapa con esas fechas.";
+
+        return null; // todo correcto
+    }
+
+    
 
     /**
      * Comprueba si el trabajador está bloqueado para la fecha indicada.

@@ -94,7 +94,7 @@ public class EspecialidadService {
 
     /**
      * Elimina una especialidad si no está asignada a un trabajador.
-     * (Puedes añadir esta validación si quieres en DAO con FK).
+     * 
      */
     public boolean eliminarEspecialidad(int idEspecialidad) {
         try {
@@ -104,9 +104,6 @@ public class EspecialidadService {
         }
     }
 
-    // ============================
-    // NUEVAS FUNCIONES PARA ASIGNAR Y ELIMINAR ESPECIALIDADES A TRABAJADORES
-    // ============================
 
     /**
      * Asignar una especialidad a un trabajador

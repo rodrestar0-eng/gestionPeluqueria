@@ -2,6 +2,7 @@ package es.peluqueria.gestion.DAO;
 
 import java.sql.*;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 import es.peluqueria.gestion.bbdd.DBConnection;
 import es.peluqueria.gestion.modelo.BloqueoPeluquero;
@@ -43,6 +44,32 @@ public class BloqueoPeluqueroDAO {
         }
         return lista;
     }
+    
+    public boolean existeSolape(int idTrabajador, LocalDate inicio, LocalDate fin) {
+
+        String sql = "SELECT COUNT(*) FROM BLOQUEOS_PELUQUERO " +
+                     "WHERE ID_TRABAJADOR = ? " +
+                     "AND (FECHA_INICIO <= ? AND FECHA_FIN >= ?)";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idTrabajador);
+            ps.setDate(2, Date.valueOf(fin));
+            ps.setDate(3, Date.valueOf(inicio));
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
 
     public void eliminar(int idBloqueo) {
         String sql = "DELETE FROM BLOQUEOS_PELUQUERO WHERE ID_BLOQUEO = ?";

@@ -51,7 +51,7 @@ public class AuthFilter implements Filter {
         // 1. Acceso a controladores de cliente
         if (uri.contains("/cita") && uri.contains("misCitasCliente")) {
             if (!clienteLogueado) {
-                response.sendRedirect("/jsp/login.jsp");
+                response.sendRedirect(request.getContextPath() +"/jsp/login.jsp");
                 return;
             }
         }
@@ -59,7 +59,7 @@ public class AuthFilter implements Filter {
         // 2. Acceso a controladores de peluquero o admin
         if (uri.contains("/cita") && uri.contains("misCitasPeluquero")) {
             if (!usuarioLogueado) {
-                response.sendRedirect("/jsp/login.jsp");
+                response.sendRedirect(request.getContextPath() +"/jsp/login.jsp");
                 return;
             }
         }
@@ -68,7 +68,7 @@ public class AuthFilter implements Filter {
      // Controlador "usuario" → solo admin
         if (uri.contains("/usuario") && !uri.contains("/jspUsuario/")) {
             if (!usuarioLogueado) {
-                response.sendRedirect("/jsp/login.jsp");
+                response.sendRedirect(request.getContextPath() +"/jsp/login.jsp");
                 return;
             }
 
@@ -78,7 +78,7 @@ public class AuthFilter implements Filter {
         // 4. Acceso general al controlador de servicios, especialidades, etc (solo admin)
         if (uri.contains("/servicio") || uri.contains("/especialidad")) {
             if (!usuarioLogueado) {
-                response.sendRedirect("/jsp/login.jsp");
+                response.sendRedirect(request.getContextPath() +"/jsp/login.jsp");
                 return;
             }
         }

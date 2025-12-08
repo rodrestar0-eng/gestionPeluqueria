@@ -1,6 +1,9 @@
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.util.*" %>
 <%@ page import="es.peluqueria.gestion.modelo.Cita" %>
+<%@ page import="java.util.Set" %>
+
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <meta charset="UTF-8">
 
@@ -10,6 +13,9 @@
     String weekPrev = (String) request.getAttribute("weekPrev");
     String weekNext = (String) request.getAttribute("weekNext");
     Integer idTrabajador = (Integer) request.getAttribute("idTrabajador");
+
+    Set<LocalDate> diasBloqueados = (Set<LocalDate>) request.getAttribute("diasBloqueados");
+    if (diasBloqueados == null) diasBloqueados = new HashSet<>();
 
     if (citasPorDia == null) citasPorDia = new LinkedHashMap<>();
     List<LocalDate> fechas = new ArrayList<>(citasPorDia.keySet());
@@ -22,6 +28,7 @@
     <title>Gestionar Horarios</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
 
     <style>
         body {
@@ -77,6 +84,17 @@
         .table-hover tbody tr:hover {
             background-color: rgba(0, 123, 255, 0.1);
         }
+        .dia-bloqueado {
+    background-color: #d6d8db !important;
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.dia-bloqueado-header {
+    background-color: #adb5bd !important;
+    color: #333;
+}
+        
     </style>
 </head>
 
@@ -113,7 +131,7 @@
         <div class="flex-grow-1"></div>
 
         <span class="text-light me-2">
-            <i class="bi bi-person"></i> Trabajador #<%= idTrabajador %>
+            <i class="bi bi-person"></i> Peluquero 
         </span>
     </div>
 
@@ -128,9 +146,15 @@
                                     <tr>
                                         <th class="hour-column"><i class="bi bi-clock"></i> Hora</th>
                                         <% for (LocalDate d : fechas) { %>
-                                            <th>
-                                                <%= d.getDayOfWeek().toString().substring(0,1).toUpperCase()
-                                                    + d.getDayOfWeek().toString().substring(1).toLowerCase() %>
+                                            <th class="<%= diasBloqueados.contains(d) ? "dia-bloqueado-header" : "" %>">
+                                                <%
+    									String nombreDia = d.getDayOfWeek()
+      									  .getDisplayName(java.time.format.TextStyle.FULL, new java.util.Locale("es","ES"));
+   											 nombreDia = nombreDia.substring(0,1).toUpperCase() + nombreDia.substring(1);
+											%>
+												<%= nombreDia %>
+
+
                                                 <br>
                                                 <small class="text-muted"><%= d %></small>
                                             </th>
@@ -162,9 +186,9 @@
                                                }
                                         %>
 
-                                        <td style="height: 70px;">
+                                        <td style="height: 70px;" class="<%= diasBloqueados.contains(dia) ? "dia-bloqueado" : "" %>">
 
-                                            <% if (encontrada != null) { %>
+                                            <% if (encontrada != null && !diasBloqueados.contains(dia)) { %>
                                                 <div class="cita estado-<%= encontrada.getEstado() %>">
                                                     <strong><%= encontrada.getNombreCliente() %></strong>
                                                     <div><%= encontrada.getNombreServicio() %></div>
@@ -183,7 +207,13 @@
                                                         </select>
                                                     </form>
                                                 </div>
-                                            <% } %>
+                                            <% } else if (diasBloqueados.contains(dia)) { %>
+                                            <div class="text-muted small">
+                                            <i class="bi bi-lock-fill"></i><br>
+                                            No disponible
+                                        </div>
+                                    <% } %>
+                                            
 
                                         </td>
 

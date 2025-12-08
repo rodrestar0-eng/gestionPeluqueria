@@ -22,7 +22,6 @@
 <table class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Nombre</th>
             <th>Precio (€)</th>
             <th>Duración</th>
@@ -45,7 +44,6 @@
     %>
 
         <tr>
-            <td><%= s.getIdServicio() %></td>
             <td><%= s.getNombre() %></td>
             <td><%= s.getPrecio() %></td>
             <td><%= duracionStr %></td>

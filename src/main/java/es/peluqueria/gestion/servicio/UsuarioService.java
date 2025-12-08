@@ -39,7 +39,7 @@ public class UsuarioService {
 
 
 
-    // Login: compara hash
+    // Login
     public Usuario login(String email, String contrasena) {
         try {
             Usuario u = usuarioDAO.obtenerPorEmail(email);
@@ -52,7 +52,7 @@ public class UsuarioService {
         }
     }
 
-    // CRUD y finders
+   
     public Usuario obtenerPorId(int id) {
         try { return usuarioDAO.obtenerPorId(id); } catch (Exception e) { e.printStackTrace(); return null; }
     }
@@ -91,6 +91,11 @@ public class UsuarioService {
             return false;
         }
     }
+    
+    public boolean emailExisteParaOtroUsuario(String email, int idUsuario) {
+        return usuarioDAO.emailExisteParaOtroUsuario(email, idUsuario);
+    }
+
 
     
     public List<Usuario> listarPeluqueros() {

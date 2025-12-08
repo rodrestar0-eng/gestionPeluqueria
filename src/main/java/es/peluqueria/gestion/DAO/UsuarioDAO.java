@@ -66,6 +66,27 @@
 	            return ps.executeUpdate() > 0;
 	        }
 	    }
+	    public boolean emailExisteParaOtroUsuario(String email, int idUsuario) {
+	        String sql = "SELECT COUNT(*) FROM USUARIOS WHERE EMAIL = ? AND ID_USUARIO != ?";
+
+	        try (Connection conn = DBConnection.getConnection();
+	             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+	            ps.setString(1, email);
+	            ps.setInt(2, idUsuario);
+
+	            ResultSet rs = ps.executeQuery();
+	            if (rs.next()) {
+	                return rs.getInt(1) > 0;
+	            }
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+
+	        return false;
+	    }
+
 
 	
 	    // =========================
@@ -89,8 +110,8 @@
 	 // ASIGNAR ESPECIALIDADES A UN TRABAJADOR
 	 // ============================================
 	    public boolean asignarEspecialidades(int idUsuario, List<Integer> especialidadesSeleccionadas) {
-	        String deleteSQL = "DELETE FROM USUARIO_ESPECIALIDAD WHERE ID_USUARIO = ?";
-	        String insertSQL = "INSERT INTO USUARIO_ESPECIALIDAD (ID_USUARIO, ID_ESPECIALIDAD) VALUES (?, ?)";
+	        String deleteSQL = "DELETE FROM TRABAJADOR_ESPECIALIDAD WHERE ID_USUARIO = ?";
+	        String insertSQL = "INSERT INTO TRABAJADOR_ESPECIALIDAD (ID_USUARIO, ID_ESPECIALIDAD) VALUES (?, ?)";
 
 	        try (Connection conn = DBConnection.getConnection()) {
 
@@ -120,7 +141,7 @@
 
 
 	    public void eliminarEspecialidadesDeUsuario(int idUsuario) throws SQLException {
-	        String sql = "DELETE FROM USUARIO_ESPECIALIDAD WHERE ID_USUARIO = ?";
+	        String sql = "DELETE FROM TRABAJADOR_ESPECIALIDAD WHERE ID_USUARIO = ?";
 	        try (Connection conn = DBConnection.getConnection();
 	             PreparedStatement ps = conn.prepareStatement(sql)) {
 	            ps.setInt(1, idUsuario);
@@ -206,7 +227,7 @@
 	        String sql = """
 	            SELECT u.* 
 	            FROM USUARIOS u
-	            INNER JOIN TRABAJADOR_ESPECIALIDAD ue ON u.ID_USUARIO = ue.ID_USUARIO
+	            INNER JOIN TRABAJADOR_ESPECIALIDAD ue ON u.ID_USUARIO = ue.ID_TRABAJADOR
 	            WHERE ue.ID_ESPECIALIDAD = ? 
 	              AND u.TIPO_USUARIO = 2
 	            ORDER BY u.NOMBRE

@@ -6,11 +6,10 @@
 <%
     Cliente cliente = (Cliente) session.getAttribute("cliente");
     if (cliente == null) {
-        response.sendRedirect("../login.jsp");
+        response.sendRedirect(request.getContextPath() +"/jsp/login.jsp");
         return;
     }
 
-    // SOLO servicios → los peluqueros ahora llegan por AJAX
     List<Servicio> servicios = (List<Servicio>) request.getAttribute("servicios");
 %>
 
@@ -20,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const servicioSelect = document.querySelector("select[name='idServicio']");
     const peluqueroSelect = document.querySelector("select[name='idPeluquero']");
 
-    // 🔒 Bloqueamos peluquero hasta que el usuario elija un servicio
+    //  Bloqueamos peluquero hasta que el usuario elija un servicio
     peluqueroSelect.disabled = true;
 
     servicioSelect.addEventListener("change", function () {
@@ -42,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(html => {
 
                 peluqueroSelect.innerHTML = html;
-                peluqueroSelect.disabled = false;  // 🔓 Ya puede seleccionarse
+                peluqueroSelect.disabled = false;  //  Ya puede seleccionarse
             })
             .catch(() => {
                 peluqueroSelect.innerHTML = `<option>Error al cargar</option>`;

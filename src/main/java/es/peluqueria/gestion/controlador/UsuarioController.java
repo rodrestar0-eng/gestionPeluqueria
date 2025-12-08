@@ -105,7 +105,7 @@ public class UsuarioController extends HttpServlet {
         HttpSession sesion = request.getSession(false);
 
         if (sesion == null || sesion.getAttribute("usuario") == null) {
-            response.sendRedirect("/jsp/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
             return;
         }
 
@@ -175,7 +175,7 @@ public class UsuarioController extends HttpServlet {
             return;
         }
 
-        response.sendRedirect("/jsp/login.jsp");
+        response.sendRedirect(request.getContextPath() +"/jsp/login.jsp");
     }
     
     private void actualizarMiPerfil(HttpServletRequest request, HttpServletResponse response)
@@ -188,11 +188,32 @@ public class UsuarioController extends HttpServlet {
             return;
         }
 
-        // Actualizar campos permitidos
-        usuario.setNombre(request.getParameter("nombre"));
-        usuario.setApellido(request.getParameter("apellido"));
-        usuario.setEmail(request.getParameter("email"));
-        usuario.setTelefono(request.getParameter("telefono"));
+        // Recogemos datos
+        String nombre = request.getParameter("nombre");
+        String apellido = request.getParameter("apellido");
+        String email = request.getParameter("email");
+        String telefono = request.getParameter("telefono");
+
+        // --- VALIDACIONES ---
+        String error = validarPerfil(nombre, apellido, email, telefono, usuario.getIdUsuario());
+
+        if (error != null) {
+            request.setAttribute("error", error);
+
+            // recargar especialidades
+            TrabajadorEspecialidadService tes = new TrabajadorEspecialidadService();
+            List<Especialidad> especialidades = tes.obtenerEspecialidadesCompletas(usuario.getIdUsuario());
+            request.setAttribute("especialidades", especialidades);
+
+            request.getRequestDispatcher("jspUsuario/miPerfil.jsp").forward(request, response);
+            return;
+        }
+
+        // Si llegamos aquí, los datos son válidos
+        usuario.setNombre(nombre.trim());
+        usuario.setApellido(apellido.trim());
+        usuario.setEmail(email.trim());
+        usuario.setTelefono(telefono.trim());
 
         boolean ok = usuarioService.actualizarPerfilUsuario(usuario);
 
@@ -202,13 +223,15 @@ public class UsuarioController extends HttpServlet {
         } else {
             request.setAttribute("error", "No se pudo actualizar tu perfil.");
         }
-     // ⭐ VOLVER A CARGAR ESPECIALIDADES PARA QUE NO DESAPAREZCAN
+
+        // recargar especialidades
         TrabajadorEspecialidadService tes = new TrabajadorEspecialidadService();
         List<Especialidad> especialidades = tes.obtenerEspecialidadesCompletas(usuario.getIdUsuario());
         request.setAttribute("especialidades", especialidades);
-        
+
         request.getRequestDispatcher("jspUsuario/miPerfil.jsp").forward(request, response);
     }
+
 
 
     private void actualizarUsuario(HttpServletRequest request, HttpServletResponse response)
@@ -216,7 +239,7 @@ public class UsuarioController extends HttpServlet {
 
         HttpSession sesion = request.getSession(false);
         if (sesion == null || sesion.getAttribute("usuario") == null) {
-            response.sendRedirect("/jsp/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
             return;
         }
 
@@ -246,7 +269,7 @@ public class UsuarioController extends HttpServlet {
         HttpSession sesion = request.getSession(false);
 
         if (sesion == null || sesion.getAttribute("usuario") == null) {
-            response.sendRedirect("/jsp/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
             return;
         }
 
@@ -282,5 +305,41 @@ public class UsuarioController extends HttpServlet {
 
         response.sendRedirect("index.jsp");
     }
+    private String validarPerfil(String nombre, String apellido, String email, String telefono, int idUsuario) {
+
+        // Nombre obligatorio, solo letras
+        if (nombre == null || nombre.trim().isEmpty())
+            return "El nombre es obligatorio.";
+
+        if (!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{2,50}$"))
+            return "El nombre solo puede contener letras y espacios.";
+
+        // Apellido opcional pero válido
+        if (apellido != null && !apellido.trim().isEmpty()) {
+            if (!apellido.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{2,50}$"))
+                return "El apellido solo puede contener letras.";
+        }
+
+        // Email obligatorio y con formato
+        if (email == null || email.trim().isEmpty())
+            return "El correo es obligatorio.";
+
+        if (!email.matches("^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,6}$"))
+            return "Formato de correo no válido.";
+
+        // Teléfono opcional
+        if (telefono != null && !telefono.isEmpty()) {
+            if (!telefono.matches("^[0-9]{9,15}$"))
+                return "El teléfono debe contener entre 9 y 15 números.";
+        }
+
+        // Comprobar email duplicado
+        if (usuarioService.emailExisteParaOtroUsuario(email, idUsuario)) {
+            return "Ese correo ya está siendo utilizado por otro usuario.";
+        }
+
+        return null; // correcto
+    }
+
 
 }

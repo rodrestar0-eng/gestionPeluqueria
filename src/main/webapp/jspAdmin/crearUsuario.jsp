@@ -7,9 +7,11 @@
     // Seguridad: solo admin
     Usuario admin = (Usuario) session.getAttribute("usuario");
     if (admin == null || admin.getTipoUsuario() != 1) {
-        response.sendRedirect("/jsp/login.jsp");
+        response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
         return;
     }
+    
+    String error = (String) request.getAttribute("error");
 
     // Especialidades pasadas desde AdminController
     List<Especialidad> especialidades = (List<Especialidad>) request.getAttribute("especialidades");
@@ -37,6 +39,12 @@
                     </div>
                     <div class="card-body">
                         <a href="admin?accion=panel" class="btn btn-secondary mb-4">⬅ Volver al Panel</a>
+                        <% if (error != null) { %>
+    <div class="alert alert-danger text-center fw-bold">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <%= error %>
+    </div>
+			<% } %>
                         
                         <form action="admin" method="post">
                             <input type="hidden" name="accion" value="crearUsuario">
@@ -77,30 +85,7 @@
                                     <option value="2">Peluquero / Trabajador</option>
                                 </select>
                             </div>
-                            
-                            <!-- ESPECIALIDADES SOLO SI TIPO = 2 -->
-                            <div id="box-especialidades" class="hidden mb-3">
-                                <label class="form-label">Especialidades del trabajador:</label>
-                                <div class="row">
-                                    <%
-                                        if (especialidades != null) {
-                                            for (Especialidad e : especialidades) {
-                                    %>
-                                        <div class="col-md-6">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="especialidades" value="<%= e.getIdEspecialidad() %>" id="esp<%= e.getIdEspecialidad() %>">
-                                                <label class="form-check-label" for="esp<%= e.getIdEspecialidad() %>">
-                                                    <%= e.getNombre() %>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    <%
-                                            }
-                                        }
-                                    %>
-                                </div>
-                            </div>
-                            
+                                 
                             <div class="d-grid mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg">Crear Usuario</button>
                             </div>

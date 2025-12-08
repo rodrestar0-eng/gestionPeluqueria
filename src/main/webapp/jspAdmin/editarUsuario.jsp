@@ -7,7 +7,7 @@
     // Seguridad: solo admin
     Usuario admin = (Usuario) session.getAttribute("usuario");
     if (admin == null || admin.getTipoUsuario() != 1) {
-        response.sendRedirect("/jsp/login.jsp");
+        response.sendRedirect(request.getContextPath() +"/jsp/login.jsp");
         return;
     }
 
@@ -15,6 +15,8 @@
     Usuario usuarioEditar = (Usuario) request.getAttribute("usuarioEdit");
     List<Especialidad> especialidades = (List<Especialidad>) request.getAttribute("especialidades");
     List<Integer> especialidadesUsuario = (List<Integer>) request.getAttribute("especialidadesUsuario");
+    String error = (String) request.getAttribute("error");
+
 %>
 
 <!DOCTYPE html>
@@ -50,6 +52,12 @@
 <body>
 
 <h2>Editar Usuario</h2>
+<% if (error != null) { %>
+    <div style="background:#f8d7da; color:#721c24; padding:10px; border-radius:5px; border:1px solid #f5c6cb; margin-bottom:15px;">
+        <strong>Error:</strong> <%= error %>
+    </div>
+<% } %>
+
 <a href="admin?accion=listarUsuarios">⬅ Volver al Panel</a>
 <br><br>
 

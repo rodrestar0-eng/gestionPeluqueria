@@ -27,7 +27,7 @@ public class TrabajadorEspecialidadService {
     }
 
 
-    // ⭐ MÉTODO CORRECTO PARA DEVOLVER ESPECIALIDADES COMPLETAS
+    //  MÉTODO PARA DEVOLVER ESPECIALIDADES COMPLETAS
     public List<Especialidad> obtenerEspecialidadesCompletas(int idTrabajador) {
 
         // Este es el método correcto

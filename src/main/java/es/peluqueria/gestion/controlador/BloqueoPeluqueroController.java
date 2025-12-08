@@ -28,20 +28,45 @@ public class BloqueoPeluqueroController extends HttpServlet {
         String accion = req.getParameter("accion");
 
         if ("crear".equals(accion)) {
-            BloqueoPeluquero b = new BloqueoPeluquero();
-            b.setIdTrabajador(Integer.parseInt(req.getParameter("idTrabajador")));
-            b.setFechaInicio(LocalDate.parse(req.getParameter("fechaInicio")));
-            b.setFechaFin(LocalDate.parse(req.getParameter("fechaFin")));
-            b.setMotivo(req.getParameter("motivo"));
 
-            service.crearBloqueo(b);
+            int idTrabajador = Integer.parseInt(req.getParameter("idTrabajador"));
+            LocalDate inicio = LocalDate.parse(req.getParameter("fechaInicio"));
+            LocalDate fin = LocalDate.parse(req.getParameter("fechaFin"));
+            String motivo = req.getParameter("motivo");
+
+            //Validar primero
+            String error = service.validarBloqueo(idTrabajador, inicio, fin, motivo);
+
+            if (error != null) {
+                req.setAttribute("error", error);
+            } else {
+                // Crear solo si está validado
+                BloqueoPeluquero b = new BloqueoPeluquero();
+                b.setIdTrabajador(idTrabajador);
+                b.setFechaInicio(inicio);
+                b.setFechaFin(fin);
+                b.setMotivo(motivo);
+
+                service.crearBloqueo(b);
+                req.setAttribute("mensaje", "Bloqueo creado correctamente.");
+            }
+
+           
+            req.setAttribute("bloqueos", service.obtenerBloqueosPorTrabajador(idTrabajador));
+            req.getRequestDispatcher("jspUsuario/gestionBloqueos.jsp").forward(req, resp);
+
+            return;  
         }
 
         if ("eliminar".equals(accion)) {
             int idBloqueo = Integer.parseInt(req.getParameter("idBloqueo"));
-            service.eliminarBloqueo(idBloqueo);
-        }
+            int idTrabajador = Integer.parseInt(req.getParameter("idTrabajador"));
 
-        resp.sendRedirect("bloqueos?idTrabajador=" + req.getParameter("idTrabajador"));
+            service.eliminarBloqueo(idBloqueo);
+
+            resp.sendRedirect("bloqueos?idTrabajador=" + idTrabajador);
+            return;
+        }
     }
+
 }

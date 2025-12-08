@@ -96,29 +96,32 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Nombre</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input type="text" name="nombre" class="form-control" placeholder="Tu nombre" required>
-                        </div>
-                    </div>
+    <label class="form-label fw-bold">Nombre</label>
+    <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-person"></i></span>
+        <input type="text" name="nombre" class="form-control" placeholder="Tu nombre" required
+               pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo se permiten letras">
+    </div>
+</div>
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Apellidos</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input type="text" name="apellido" class="form-control" placeholder="Tus apellidos" required>
-                        </div>
-                    </div>
-                </div>
+<div class="col-md-6 mb-3">
+    <label class="form-label fw-bold">Apellidos</label>
+    <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-person"></i></span>
+        <input type="text" name="apellido" class="form-control" placeholder="Tus apellidos" required
+               pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo se permiten letras">
+    </div>
+</div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Teléfono</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                        <input type="text" name="telefono" class="form-control" placeholder="Tu teléfono" required>
-                    </div>
-                </div>
+<div class="mb-3">
+    <label class="form-label fw-bold">Teléfono</label>
+    <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+        <input type="text" name="telefono" class="form-control" placeholder="Tu teléfono" required
+               pattern="\d+" title="Solo se permiten números">
+    </div>
+</div>
+
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">Email</label>

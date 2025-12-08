@@ -20,10 +20,20 @@
         body {
             background-color: #f8f9fa;
         }
-        .estado-0 { background-color: #f8d7da !important; } /* Cancelada */
-        .estado-1 { background-color: #d1e7dd !important; } /* Activa */
-        .estado-2 { background-color: #fff3cd !important; } /* Pendiente */
-        .estado-3 { background-color: #cfe2ff !important; } /* Completada */
+.table tbody tr.estado-1 td {
+    background-color: #fff3cd !important; /* Pendiente */
+}
+
+.table tbody tr.estado-2 td {
+    background-color: #d1e7dd !important; /* Completada */
+}
+
+.table tbody tr.estado-3 td {
+    background-color: #f8d7da !important; /* Cancelada */
+}
+
+
+
 
         .tabla-scroll {
             max-height: 500px;
@@ -79,12 +89,12 @@
                             <div class="col-md-4">
                                 <label class="form-label"><i class="bi bi-flag"></i> Estado</label>
                                 <select name="estado" class="form-select">
-                                    <option value="">Todos</option>
-                                    <option value="1" <%= "1".equals(filtroEstado) ? "selected" : "" %>>Activa</option>
-                                    <option value="2" <%= "2".equals(filtroEstado) ? "selected" : "" %>>Pendiente</option>
-                                    <option value="3" <%= "3".equals(filtroEstado) ? "selected" : "" %>>Completada</option>
-                                    <option value="0" <%= "0".equals(filtroEstado) ? "selected" : "" %>>Cancelada</option>
-                                </select>
+   									 <option value="">Todos</option>
+   									 <option value="1" <%= "1".equals(filtroEstado) ? "selected" : "" %>>Pendiente</option>
+    								<option value="2" <%= "2".equals(filtroEstado) ? "selected" : "" %>>Completada</option>
+   									 <option value="3" <%= "3".equals(filtroEstado) ? "selected" : "" %>>Cancelada</option>
+								</select>
+
                             </div>
 
                             <div class="col-md-4">
@@ -133,19 +143,23 @@
                                             !c.getNombreServicio().equals(filtroServicio)) continue;
                                 %>
 
-                                    <tr class="estado-<%= c.getEstado() %>">
+                                    <tr class="<%= "estado-" + c.getEstado() %>">
                                         <td><%= c.getFechaCita() %></td>
                                         <td><%= c.getHoraInicio() %> - <%= c.getHoraFin() %></td>
                                         <td><%= c.getNombreServicio() %></td>
 
-                                        <td>
-                                            <% switch (c.getEstado()) {
-                                                case 1: out.print("Activa"); break;
-                                                case 2: out.print("Pendiente"); break;
-                                                case 3: out.print("Completada"); break;
-                                                case 0: out.print("Cancelada"); break;
-                                            } %>
-                                        </td>
+                                       <td>
+   											 <%
+											switch (c.getEstado()) {
+    										case 1: out.print("Pendiente"); break;
+   											 case 2: out.print("Completada"); break;
+   											 case 3: out.print("Cancelada"); break;
+    											default: out.print("Desconocido");
+												}
+												%>
+
+									</td>
+
 
                                         <td>
                                             <a href="cita?accion=detallePeluquero&id=<%= c.getIdCita() %>"

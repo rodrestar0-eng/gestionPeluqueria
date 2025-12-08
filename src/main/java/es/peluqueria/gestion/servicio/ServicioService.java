@@ -33,7 +33,7 @@ public class ServicioService {
                 return false;
             }
 
-            // 1️⃣ Insertamos servicio y obtenemos ID generado
+            //  Insertamos servicio y obtenemos ID generado
             int idServicioNuevo = servicioDAO.insertar(servicio);
 
             if (idServicioNuevo == -1) {
@@ -41,7 +41,7 @@ public class ServicioService {
                 return false;
             }
 
-            // 2️⃣ Guardamos relación SERVICIO → ESPECIALIDAD
+            //  Guardamos relación SERVICIO → ESPECIALIDAD
             EspecialidadServicioDAO espServDAO = new EspecialidadServicioDAO();
             return espServDAO.asignarEspecialidad(idServicioNuevo, idEspecialidad);
 

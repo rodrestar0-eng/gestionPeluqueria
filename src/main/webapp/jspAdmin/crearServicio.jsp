@@ -1,4 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%
+    String error = (String) request.getAttribute("error");
+%>
 
 <!DOCTYPE html>
 <html>
@@ -19,6 +22,13 @@
                         <h3 class="card-title mb-0">Crear Nuevo Servicio</h3>
                     </div>
                     <div class="card-body">
+                    <% if (error != null) { %>
+    <div class="alert alert-danger text-center fw-bold">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <%= error %>
+    </div>
+<% } %>
+                    
                         <form action="admin" method="post">
                             <input type="hidden" name="accion" value="crearServicio">
                             

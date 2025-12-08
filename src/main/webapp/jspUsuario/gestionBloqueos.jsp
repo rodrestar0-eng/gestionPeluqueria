@@ -79,6 +79,23 @@
 
                             <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Agregar Bloqueo</button>
                         </form>
+                        <!-- Mensajes -->
+						<% if (request.getAttribute("error") != null) { %>
+    						<div class="alert alert-danger alert-dismissible fade show" role="alert">
+        					<i class="bi bi-exclamation-octagon"></i> 
+        				<%= request.getAttribute("error") %>
+       						 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+   								 </div>
+				<% } %>
+
+					<% if (request.getAttribute("mensaje") != null) { %>
+  					  <div class="alert alert-success alert-dismissible fade show" role="alert">
+  			      <i class="bi bi-check-circle"></i> 
+  			      <%= request.getAttribute("mensaje") %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  				  </div>
+				<% } %>
+                        
                     </div>
                 </div>
                 
@@ -95,7 +112,6 @@
                             <table class="table table-striped table-hover text-center">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th><i class="bi bi-hash"></i> ID</th>
                                         <th><i class="bi bi-calendar-date"></i> Fecha Inicio</th>
                                         <th><i class="bi bi-calendar-date"></i> Fecha Fin</th>
                                         <th><i class="bi bi-chat-text"></i> Motivo</th>
@@ -108,7 +124,6 @@
                                             for (BloqueoPeluquero bloqueo : bloqueos) {
                                     %>
                                         <tr>
-                                            <td><%= bloqueo.getIdBloqueo() %></td>
                                             <td><%= bloqueo.getFechaInicio() %></td>
                                             <td><%= bloqueo.getFechaFin() %></td>
                                             <td><%= bloqueo.getMotivo() != null ? bloqueo.getMotivo() : "Sin motivo" %></td>

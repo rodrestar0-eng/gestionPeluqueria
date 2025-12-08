@@ -46,7 +46,6 @@
 
 <table>
     <tr>
-        <th>ID</th>
         <th>Nombre</th>
         <th>Acciones</th>
     </tr>
@@ -54,7 +53,6 @@
     <% if (lista != null) {
         for (Especialidad e : lista) { %>
             <tr>
-                <td><%= e.getIdEspecialidad() %></td>
                 <td><%= e.getNombre() %></td>
                 <td>
                     <a class="btn edit" href="admin?accion=editarEspecialidad&id=<%= e.getIdEspecialidad() %>">Editar</a>

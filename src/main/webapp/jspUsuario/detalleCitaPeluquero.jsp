@@ -40,12 +40,15 @@
         <p><strong>Hora:</strong> <%= cita.getHoraInicio() %></p>
         <p><strong>Servicio:</strong> <%= cita.getNombreServicio() %></p>
         <p><strong>Estado actual:</strong>
-            <% switch (cita.getEstado()) {
-                case 1: out.print("Activa"); break;
-                case 2: out.print("Pendiente"); break;
-                case 3: out.print("Completada"); break;
-                case 0: out.print("Cancelada"); break;
-            } %>
+            <%
+switch (cita.getEstado()) {
+    case 1: out.print("Pendiente"); break;
+    case 2: out.print("Completada"); break;
+    case 3: out.print("Cancelada"); break;
+    default: out.print("Desconocido");
+}
+%>
+
         </p>
 
         <hr>
@@ -57,11 +60,11 @@
             <input type="hidden" name="idCita" value="<%= cita.getIdCita() %>">
 
             <select name="estado" class="form-select mb-3">
-                <option value="1" <%= cita.getEstado()==1?"selected":"" %>>Activa</option>
-                <option value="2" <%= cita.getEstado()==2?"selected":"" %>>Pendiente</option>
-                <option value="3" <%= cita.getEstado()==3?"selected":"" %>>Completada</option>
-                <option value="0" <%= cita.getEstado()==0?"selected":"" %>>Cancelada</option>
-            </select>
+    <option value="1" <%= cita.getEstado()==1?"selected":"" %>>Pendiente</option>
+    <option value="2" <%= cita.getEstado()==2?"selected":"" %>>Completada</option>
+    <option value="3" <%= cita.getEstado()==3?"selected":"" %>>Cancelada</option>
+</select>
+
 
             <button class="btn btn-primary w-100">
                 <i class="bi bi-check-circle"></i> Guardar Cambios

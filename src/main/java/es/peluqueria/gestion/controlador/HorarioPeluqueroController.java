@@ -12,6 +12,9 @@ import es.peluqueria.gestion.servicio.CitaService;
 import es.peluqueria.gestion.servicio.HorarioPeluqueroService;
 import es.peluqueria.gestion.servicio.ServicioService;
 import es.peluqueria.gestion.servicio.ClienteService;
+import es.peluqueria.gestion.servicio.BloqueoPeluqueroService;
+import es.peluqueria.gestion.modelo.BloqueoPeluquero;
+
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -26,6 +29,8 @@ public class HorarioPeluqueroController extends HttpServlet {
     private CitaService citaService = new CitaService();
     private ServicioService servicioService = new ServicioService();
     private ClienteService clienteService = new ClienteService();
+    private BloqueoPeluqueroService bloqueoService = new BloqueoPeluqueroService();
+
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -99,6 +104,27 @@ public class HorarioPeluqueroController extends HttpServlet {
 
             citasPorDia.put(fechaActual, citasDia);
         }
+        
+     // ==============================
+     // BLOQUEOS DEL PELUQUERO
+     // ==============================
+
+     List<BloqueoPeluquero> bloqueos = bloqueoService.obtenerBloqueosPorTrabajador(idTrabajador);
+
+     Set<LocalDate> diasBloqueados = new HashSet<>();
+
+     if (bloqueos != null) {
+         for (BloqueoPeluquero b : bloqueos) {
+
+             LocalDate inicio = b.getFechaInicio();
+             LocalDate fin = b.getFechaFin();
+
+             for (LocalDate d = inicio; !d.isAfter(fin); d = d.plusDays(1)) {
+                 diasBloqueados.add(d);
+             }
+         }
+     }
+
 
         // Enviar al JSP
         req.setAttribute("idTrabajador", idTrabajador);
@@ -107,6 +133,8 @@ public class HorarioPeluqueroController extends HttpServlet {
         req.setAttribute("weekNext", weekStart.plusWeeks(1).toString());
         req.setAttribute("citasPorDia", citasPorDia);
         req.setAttribute("horarios", horarios);
+        req.setAttribute("diasBloqueados", diasBloqueados);
+
 
         req.getRequestDispatcher("/jspUsuario/gestionHorarios.jsp").forward(req, resp);
     }

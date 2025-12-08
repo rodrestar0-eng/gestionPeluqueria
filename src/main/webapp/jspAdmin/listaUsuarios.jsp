@@ -55,20 +55,19 @@
 
 <body>
 
-<h4 class="mb-2">👷 Lista de Trabajadores</h4>
+<h4 class="mb-2">👷 Lista de Usuarios</h4>
 
 <div class="tabla-contenedor">
 
     <% if (trabajadores == null || trabajadores.isEmpty()) { %>
 
-        <p class="text-muted">No hay trabajadores registrados.</p>
+        <p class="text-muted">No hay usuarios registrados.</p>
 
     <% } else { %>
 
         <table class="table table-bordered table-hover table-sm mb-0">
             <thead class="table-dark">
             <tr>
-                <th>ID</th>
                 <th>Nombre</th>
                 <th>Apellido</th>
                 <th>Email</th>
@@ -79,7 +78,6 @@
             <tbody>
             <% for (Usuario t : trabajadores) { %>
             <tr>
-                <td><%= t.getIdUsuario() %></td>
                 <td><%= t.getNombre() %></td>
                 <td><%= t.getApellido() %></td>
                 <td><%= t.getEmail() %></td>

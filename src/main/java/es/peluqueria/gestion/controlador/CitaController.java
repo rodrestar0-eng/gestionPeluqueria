@@ -66,7 +66,11 @@ public class CitaController extends HttpServlet {
                 break;
 
             case "cancelar":
-                cancelarCita(request, response);
+			try {
+				cancelarCita(request, response);
+			} catch (IOException | SQLException e) {
+				e.printStackTrace();
+			}
                 break;
 
             case "misCitasCliente":
@@ -75,7 +79,7 @@ public class CitaController extends HttpServlet {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                break;  // ← CORREGIDO (antes faltaba y caía al siguiente case)
+                break;  
 
             case "misCitasPeluquero":
                 listarCitasPeluquero(request, response);
@@ -157,22 +161,35 @@ public class CitaController extends HttpServlet {
             int idPeluquero = Integer.parseInt(request.getParameter("idPeluquero"));
             cita.setIdPeluquero(idPeluquero);
             cita.setIdServicio(Integer.parseInt(request.getParameter("idServicio")));
-            cita.setFechaCita(java.time.LocalDate.parse(request.getParameter("fecha")));
+            LocalDate fechaSolicitada = java.time.LocalDate.parse(request.getParameter("fecha"));
+            cita.setFechaCita(fechaSolicitada);
             cita.setHoraInicio(request.getParameter("horaInicio"));
             cita.setEstado(1);
 
-            // --------------- NUEVO: comprobación de bloqueos ---------------
-            // Si el peluquero tiene un bloqueo que incluye la fecha solicitada,
-            // no permitimos crear la cita y mostramos mensaje de error.
-            LocalDate fechaSolicitada = cita.getFechaCita();
-            if (bloqueoService != null && bloqueoService.estaBloqueado(idPeluquero, fechaSolicitada)) {
-                request.setAttribute("error", "No se pudo registrar la cita: el peluquero no está disponible en esa fecha.");
-                // Recargar datos necesarios para el formulario y forward al JSP
+            // --------------- Validación: fecha demasiado lejana ---------------
+            LocalDate fechaMaxima = LocalDate.now().plusYears(2);
+            if (fechaSolicitada.isAfter(fechaMaxima)) {
+                request.setAttribute("error", "La fecha seleccionada es demasiado lejana en el tiempo (más de 2 años).");
                 List<Usuario> peluqueros = usuarioService.listarPeluqueros();
                 List<Servicio> servicios = servicioService.listarTodos();
                 request.setAttribute("peluqueros", peluqueros);
                 request.setAttribute("servicios", servicios);
-                // Opcional: mantener valores seleccionados para mejorar UX
+                request.setAttribute("selectedPeluquero", idPeluquero);
+                request.setAttribute("selectedServicio", cita.getIdServicio());
+                request.setAttribute("selectedFecha", fechaSolicitada.toString());
+                request.setAttribute("selectedHora", cita.getHoraInicio());
+                request.getRequestDispatcher("/jspCliente/crearCita.jsp").forward(request, response);
+                return;
+            }
+            // ----------------------------------------------------------------
+
+            // --------------- comprobación de bloqueos ---------------
+            if (bloqueoService != null && bloqueoService.estaBloqueado(idPeluquero, fechaSolicitada)) {
+                request.setAttribute("error", "No se pudo registrar la cita: el peluquero no está disponible en esa fecha.");
+                List<Usuario> peluqueros = usuarioService.listarPeluqueros();
+                List<Servicio> servicios = servicioService.listarTodos();
+                request.setAttribute("peluqueros", peluqueros);
+                request.setAttribute("servicios", servicios);
                 request.setAttribute("selectedPeluquero", idPeluquero);
                 request.setAttribute("selectedServicio", cita.getIdServicio());
                 request.setAttribute("selectedFecha", fechaSolicitada.toString());
@@ -187,8 +204,7 @@ public class CitaController extends HttpServlet {
             if (ok) {
                 response.sendRedirect("cita?accion=misCitasCliente");
             } else {
-                request.setAttribute("error", "No se pudo registrar la cita.");
-                // recargar peluqueros/servicios antes de forward
+                request.setAttribute("error", "No se pudo registrar la cita");
                 List<Usuario> peluqueros = usuarioService.listarPeluqueros();
                 List<Servicio> servicios = servicioService.listarTodos();
                 request.setAttribute("peluqueros", peluqueros);
@@ -199,7 +215,6 @@ public class CitaController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error al procesar la cita.");
-            // recargar peluqueros/servicios antes de forward
             try {
                 List<Usuario> peluqueros = usuarioService.listarPeluqueros();
                 List<Servicio> servicios = servicioService.listarTodos();
@@ -270,13 +285,25 @@ public class CitaController extends HttpServlet {
 
 
     private void cancelarCita(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+            throws IOException, SQLException {
 
         int idCita = Integer.parseInt(request.getParameter("id"));
 
-        citaService.eliminarCita(idCita);
-
         HttpSession sesion = request.getSession(false);
+
+        if (sesion != null && sesion.getAttribute("cliente") != null) {
+
+            String error = citaService.validarCancelacionCliente(idCita);
+
+            if (error != null) {
+                sesion.setAttribute("error", error);
+                response.sendRedirect("cita?accion=misCitasCliente");
+                return;
+            }
+        }
+
+        //ADMIN Y PELUQUERO CANCELAN SIEMPRE
+        citaService.eliminarCita(idCita);
 
         if (sesion != null && sesion.getAttribute("usuario") != null) {
             Usuario u = (Usuario) sesion.getAttribute("usuario");
@@ -294,6 +321,8 @@ public class CitaController extends HttpServlet {
 
         response.sendRedirect("cita?accion=misCitasCliente");
     }
+
+
 
 
     private void listarTodas(HttpServletRequest request, HttpServletResponse response)
@@ -351,7 +380,6 @@ public class CitaController extends HttpServlet {
 
         ClienteService clienteService = new ClienteService();
 
-        // Añadir nombre completo a cada cita
         for (Cita c : citas) {
             c.setNombreCliente(clienteService.obtenerNombreCompletoPorId(c.getIdCliente()));
         }
@@ -380,7 +408,6 @@ public class CitaController extends HttpServlet {
             return;
         }
 
-        // 🔥 USAMOS AHORA EL SERVICE, NO EL DAO 🔥
         Integer idEspecialidad = servicioService.obtenerEspecialidadDeServicio(idServicio);
 
         if (idEspecialidad == null) {
