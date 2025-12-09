@@ -10,7 +10,7 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.Properties;
 
-// IMPORTS CORRECTOS DE JAVAMAIL
+//IMPORTS CODIGO DE VERIFICACION
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.Message;

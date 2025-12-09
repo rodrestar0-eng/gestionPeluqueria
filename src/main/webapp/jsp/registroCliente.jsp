@@ -4,6 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Registro Cliente - Peluquería</title>
+    
+ <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const pass1 = document.getElementById("pass1");
+    const pass2 = document.getElementById("pass2");
+    const mensajeError = document.getElementById("mensajeErrorPass");
+    const boton = document.getElementById("btnCrear");
+
+    function validar() {
+        if (pass1.value !== pass2.value) {
+            mensajeError.style.display = "block";
+            boton.disabled = true;
+        } else {
+            mensajeError.style.display = "none";
+            boton.disabled = false;
+        }
+    }
+
+    pass1.addEventListener("input", validar);
+    pass2.addEventListener("input", validar);
+});
+</script>
+
+    
 
     <!-- BOOTSTRAP 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -18,7 +42,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            padding-top: 70px; /* Compensar la altura del navbar fijo */
+            padding-top: 70px; 
         }
         .navbar {
             background: rgba(0, 0, 0, 0.8) !important;
@@ -130,13 +154,13 @@
                         <input type="email" name="email" class="form-control" placeholder="tuemail@ejemplo.com" required>
                     </div>
                 </div>
-
+</div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Contraseña</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" name="contrasena" class="form-control" placeholder="Tu contraseña" required>
+                            <input type="password" id="pass1" name="contrasena" class="form-control" placeholder="Tu contraseña" required>
                         </div>
                     </div>
 
@@ -144,13 +168,16 @@
                         <label class="form-label fw-bold">Repite la Contraseña</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" name="repetirContrasena" class="form-control" placeholder="Repite tu contraseña" required>
-                        </div>
+                            <input type="password" id="pass2" name="repetirContrasena" class="form-control" placeholder="Repite tu contraseña" required>
+                        </div>	
                     </div>
+                    <div id="mensajeErrorPass" class="alert alert-danger mt-2" style="display:none;">
+  						  <i class="bi bi-exclamation-triangle me-2"></i>Las contraseñas no coinciden.
+							</div>
                 </div>
 
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-success btn-lg"><i class="bi bi-check-circle me-2"></i>Crear Cuenta</button>
+                    <button type="submit" class="btn btn-success btn-lg" id="btnCrear"><i class="bi bi-check-circle me-2"></i>Crear Cuenta</button>
                 </div>
             </form>
 
