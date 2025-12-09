@@ -57,7 +57,7 @@
                 <td>
                     <a class="btn edit" href="admin?accion=editarEspecialidad&id=<%= e.getIdEspecialidad() %>">Editar</a>
                     <a class="btn delete" 
-                        onclick="return confirm('¿Seguro que deseas eliminar esta especialidad? Se eliminarán también sus asignaciones.');"
+                        onclick="return confirm('¿Seguro que deseas eliminar esta especialidad?');"
                         href="admin?accion=eliminarEspecialidad&id=<%= e.getIdEspecialidad() %>">Eliminar</a>
                 </td>
             </tr>

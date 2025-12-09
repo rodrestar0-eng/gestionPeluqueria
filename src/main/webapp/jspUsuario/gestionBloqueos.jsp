@@ -63,12 +63,12 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="fechaInicio" class="form-label"><i class="bi bi-calendar-date"></i> Fecha Inicio</label>
-                                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
+                                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" max="2100-12-31" min="1900-01-01" required>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label for="fechaFin" class="form-label"><i class="bi bi-calendar-date"></i> Fecha Fin</label>
-                                    <input type="date" class="form-control" id="fechaFin" name="fechaFin" required>
+                                    <input type="date" class="form-control" id="fechaFin" name="fechaFin" max="2100-12-31" min="1900-01-01" required>
                                 </div>
                             </div>
 

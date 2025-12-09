@@ -2,6 +2,7 @@ package es.peluqueria.gestion.controlador;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import es.peluqueria.gestion.modelo.BloqueoPeluquero;
 import es.peluqueria.gestion.servicio.BloqueoPeluqueroService;
@@ -30,10 +31,20 @@ public class BloqueoPeluqueroController extends HttpServlet {
         if ("crear".equals(accion)) {
 
             int idTrabajador = Integer.parseInt(req.getParameter("idTrabajador"));
-            LocalDate inicio = LocalDate.parse(req.getParameter("fechaInicio"));
-            LocalDate fin = LocalDate.parse(req.getParameter("fechaFin"));
+            String inicioStr = req.getParameter("fechaInicio");
+            String finStr = req.getParameter("fechaFin");
             String motivo = req.getParameter("motivo");
-
+            LocalDate inicio = null;
+            LocalDate fin = null;
+            try {
+                inicio = LocalDate.parse(inicioStr);
+                fin = LocalDate.parse(finStr);
+            } catch (DateTimeParseException e) {
+                req.setAttribute("error", "Las fechas introducidas no son válidas.");
+                req.setAttribute("bloqueos", service.obtenerBloqueosPorTrabajador(idTrabajador));
+                req.getRequestDispatcher("jspUsuario/gestionBloqueos.jsp").forward(req, resp);
+                return;
+            }
             //Validar primero
             String error = service.validarBloqueo(idTrabajador, inicio, fin, motivo);
 

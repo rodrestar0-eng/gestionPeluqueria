@@ -105,7 +105,6 @@ public class MainServlet extends HttpServlet {
             }
         }
 
-        // Intentar login como trabajador (usuario)
      // Intentar login como trabajador (usuario)
         Usuario usuario = usuarioService.obtenerPorEmail(email);
 
@@ -129,6 +128,9 @@ public class MainServlet extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/jspUsuario/indexUsuario.jsp");
                     return;
                 }
+            }else {
+            request.setAttribute("error", "Contraseña incorrecta");
+            request.getRequestDispatcher("jsp/login.jsp").forward(request, response);
             }
         }
 

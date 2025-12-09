@@ -37,7 +37,7 @@ function validar() {
         alert("El nombre no puede estar vacío");
         return false;
     }
-    return confirm("¿Confirmar cambios?");
+    return true;
 }
 </script>
 

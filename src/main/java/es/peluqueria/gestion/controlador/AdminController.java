@@ -6,12 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.peluqueria.gestion.modelo.Servicio;
+import es.peluqueria.gestion.modelo.TrabajadorEspecialidad;
 import es.peluqueria.gestion.modelo.Especialidad;
 import es.peluqueria.gestion.modelo.Usuario;
 
 import es.peluqueria.gestion.servicio.CitaService;
 import es.peluqueria.gestion.servicio.EspecialidadService;
 import es.peluqueria.gestion.servicio.ServicioService;
+import es.peluqueria.gestion.servicio.TrabajadorEspecialidadService;
 import es.peluqueria.gestion.servicio.UsuarioService;
 
 import jakarta.servlet.ServletException;
@@ -25,6 +27,7 @@ public class AdminController extends HttpServlet {
 
     private UsuarioService usuarioService = new UsuarioService();
     private ServicioService servicioService = new ServicioService();
+    private TrabajadorEspecialidadService service = new TrabajadorEspecialidadService();
     private EspecialidadService especialidadService = new EspecialidadService();
     private CitaService citaService = new CitaService();
 
@@ -113,7 +116,8 @@ public class AdminController extends HttpServlet {
                             req.getRequestDispatcher("jspAdmin/listaUsuarios.jsp").forward(req, resp);
                             return;
                         }
-
+                        List<TrabajadorEspecialidad> asignadas = service.obtenerEspecialidadesPorTrabajador(idUsuario);
+                        req.setAttribute("especialidadesTrabajador", asignadas);
                         req.setAttribute("especialidades", especialidadService.listarTodas());
                         req.setAttribute("usuarioEdit", usuarioEdit);
                         req.getRequestDispatcher("/jspAdmin/editarUsuario.jsp").forward(req, resp);
@@ -303,7 +307,7 @@ public class AdminController extends HttpServlet {
                     s.setDescripcion(req.getParameter("descripcion"));
 
                     servicioService.actualizarServicio(s, idEspecialidad);
-                    resp.sendRedirect("admin?accion=panel");
+                    resp.sendRedirect("admin?accion=listarServicios");
                     return;
 
                 } catch (NumberFormatException nfe) {

@@ -26,7 +26,7 @@ public class TrabajadorEspecialidadController extends HttpServlet {
 
         int idTrabajador = Integer.parseInt(req.getParameter("idTrabajador"));
 
-        // 1️⃣ Cargar especialidades asignadas al trabajador
+        // 1️ Cargar especialidades asignadas al trabajador
         List<TrabajadorEspecialidad> asignadas = service.obtenerEspecialidadesPorTrabajador(idTrabajador);
 
      // Convertir IDs → Especialidad completa
@@ -41,11 +41,11 @@ public class TrabajadorEspecialidadController extends HttpServlet {
 
      req.setAttribute("especialidades", especialidadesConNombre);
 
-        // 2️⃣ Cargar TODAS las especialidades (necesarias para el <select>)
+        // 2️ Cargar TODAS las especialidades (necesarias para el <select>)
         List<Especialidad> todas = especialidadService.listarTodas();
         req.getSession().setAttribute("listaTodasEspecialidades", todas);
 
-        // 3️⃣ Enviar al JSP
+        // 3️ Enviar al JSP
         req.getRequestDispatcher("jspAdmin/trabajador_especialidades.jsp").forward(req, resp);
     }
 

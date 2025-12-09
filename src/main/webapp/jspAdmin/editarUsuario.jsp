@@ -14,7 +14,7 @@
     // Datos enviados desde el AdminController
     Usuario usuarioEditar = (Usuario) request.getAttribute("usuarioEdit");
     List<Especialidad> especialidades = (List<Especialidad>) request.getAttribute("especialidades");
-    List<Integer> especialidadesUsuario = (List<Integer>) request.getAttribute("especialidadesUsuario");
+    List<Integer> especialidadesUsuario = (List<Integer>) request.getAttribute("especialidadesTrabajador");
     String error = (String) request.getAttribute("error");
 
 %>
@@ -87,25 +87,8 @@
         </select>
 
         <!-- ESPECIALIDADES SOLO SI TIPO = 2 -->
-        <div id="box-especialidades" class="<%= usuarioEditar.getTipoUsuario() == 2 ? "" : "hidden" %>">
-            <label>Especialidades del trabajador:</label>
+      
 
-            <% if (especialidades != null && especialidadesUsuario != null) { 
-                for (Especialidad e : especialidades) { 
-                    boolean checked = especialidadesUsuario.contains(e.getIdEspecialidad());
-            %>
-                <div>
-                    <input 
-                        type="checkbox" 
-                        name="especialidades"
-                        value="<%= e.getIdEspecialidad() %>"
-                        <%= checked ? "checked" : "" %>
-                    >
-                    <%= e.getNombre() %>
-                </div>
-            <%  } 
-            } %>
-        </div>
 
         <br>
         <button type="submit">Guardar Cambios</button>

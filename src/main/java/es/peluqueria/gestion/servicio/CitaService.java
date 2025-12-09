@@ -107,13 +107,19 @@ public class CitaService {
         LocalDateTime fechaCita = LocalDateTime.of(fecha, hora);
         LocalDateTime ahora = LocalDateTime.now();
 
+        // 1. Si la cita ya pasó → mensaje específico
+        if (fechaCita.isBefore(ahora)) {
+            return "No es posible cancelar la cita porque ya ha pasado.";
+        }
+
+        // 2. Validar si la cita está dentro de las 16 horas → mensaje diferente
         long horas = Duration.between(ahora, fechaCita).toHours();
 
         if (horas < 16) {
-            return "Su cita es demasiado cercana, no es posible cancelar.";
+            return "No puede cancelar la cita con tan poca antelación (mínimo 16 horas).";
         }
 
-        return null;
+        return null; // todo correcto
     }
 
 
