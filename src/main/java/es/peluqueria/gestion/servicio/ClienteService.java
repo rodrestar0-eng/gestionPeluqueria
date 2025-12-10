@@ -15,7 +15,7 @@ public class ClienteService {
     }
 
     // ------------------------------------
-    // MÉTODO NUEVO: Comprobar si existe email
+    // MÉTODO: Comprobar si existe email
     // ------------------------------------
     public boolean existeEmail(String email) {
         try {
@@ -28,7 +28,7 @@ public class ClienteService {
     }
 
     // ------------------------------------
-    // MÉTODO NUEVO: Comprobar si existe telefono
+    // MÉTODO: Comprobar si existe telefono
     // ------------------------------------
     public boolean existeTelefono(String tel) {
         try {
